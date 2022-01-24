@@ -22,18 +22,12 @@ class Board():
 
     def abbrv_to_piece(self, str, color):
         str = str.lower()
-        if str == "p":
-            return Pawn(color)
-        elif str == "r":
-            return Rook(color)
-        elif str == "n":
-            return Knight(color)
-        elif str == "b":
-            return Bishop(color)
-        elif str == "q":
-            return Queen(color)
-        elif str == "k":
-            return King(color)
+        if str == "p": return Pawn(color)
+        elif str == "r": return Rook(color)
+        elif str == "n": return Knight(color)
+        elif str == "b": return Bishop(color)
+        elif str == "q": return Queen(color)
+        elif str == "k": return King(color)
 
     def is_int(self, str):
         try:
@@ -92,6 +86,8 @@ class Piece():
     def __init__(self, color):
         self.color = color
         self.directions = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"), (-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW"))
+        self.cardinalDirections = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"))
+        self.diagonalDirections = ((-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW"))
         self.Nmoves = ((), (), (), (), (), (), (), ()) # knight moves
         # slide function not in here to repeatedly use one "king move" until hit piece
         # for pawn moves it's a procedure
@@ -160,16 +156,25 @@ class Queen(Piece):
 
 class Bishop(Piece):
 
-    def __init__(self, color):
-        self.color = color
-
     def __str__(self):
         if self.color == "White":
             return "B"
         return "b"
 
-    def moves(self):
-        pass
+    def moves(self, sr, sf, er, ef):
+        position = (8 - sr) * 8 + sf
+        goal = (8 - er) * 8 + ef
+        valid = []
+
+        for dir in self.diagonalDirections:
+            possibility = position + dir[0]
+            while 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
+                valid.append(possibility)
+                possibility += dir[0]
+
+        if goal in valid:
+            return True
+        return False
 
 class Knight(Piece):
 
@@ -186,16 +191,25 @@ class Knight(Piece):
 
 class Rook(Piece):
 
-    def __init__(self, color):
-        self.color = color
-
     def __str__(self):
         if self.color == "White":
             return "R"
         return "r"
 
-    def moves(self):
-        pass
+    def moves(self, sr, sf, er, ef):
+        position = (8 - sr) * 8 + sf
+        goal = (8 - er) * 8 + ef
+        valid = []
+
+        for dir in self.cardinalDirections:
+            possibility = position + dir[0]
+            while 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
+                valid.append(possibility)
+                possibility += dir[0]
+
+        if goal in valid:
+            return True
+        return False
 
 class Pawn(Piece):
 
@@ -203,6 +217,10 @@ class Pawn(Piece):
         self.color = color
         self.double = True
         self.passant = False
+        if self.color == "White": # move up on board
+            self.directions = ((-8, "N"), (), ())
+        else: # move down on board
+            self.directions = ((8, "S"), (), ())
 
     def __str__(self):
         if self.color == "White":
