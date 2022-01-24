@@ -67,8 +67,8 @@ class Board():
         Erank = int(end[1])
         Efile = self.rank_to_int(end[0])
 
-        startIndex = Srank + 8 * (8 - Sfile)
-        endIndex = Erank + 8 * (8 - Efile)
+        startIndex = Sfile + 8 * (8 - Srank)
+        endIndex = Efile + 8 * (8 - Erank)
 
         piece = self.board[startIndex]
         if piece.moves(Srank, Sfile, Erank, Efile):
@@ -122,8 +122,8 @@ class King(Piece):
         return "k"
 
     def moves(self, sr, sf, er, ef):
-        position = (8 - sf) * 8 + sr
-        goal = (8 - ef) * 8 + er
+        position = (8 - sr) * 8 + sf
+        goal = (8 - er) * 8 + ef
         valid = []
 
          # N E S W NE SE SW NW
