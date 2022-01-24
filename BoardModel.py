@@ -138,16 +138,25 @@ class King(Piece):
 
 class Queen(Piece):
 
-    def __init__(self, color):
-        self.color = color
-
     def __str__(self):
         if self.color == "White":
             return "Q"
         return "q"
 
-    def moves(self):
-        pass
+    def moves(self, sr, sf, er, ef):
+        position = (8 - sr) * 8 + sf
+        goal = (8 - er) * 8 + ef
+        valid = []
+
+        for dir in self.directions:
+            possibility = position + dir[0]
+            while 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
+                valid.append(possibility)
+                possibility += dir[0]
+
+        if goal in valid:
+            return True
+        return False
 
 class Bishop(Piece):
 
@@ -206,5 +215,7 @@ class Pawn(Piece):
 chess = Board()
 chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
 print(str(chess))
-chess.move_piece("e1", "e2")
+chess.move_piece("d1", "d5")
+print(str(chess))
+chess.move_piece("d5", "b6")
 print(str(chess))
