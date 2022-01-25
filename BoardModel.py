@@ -83,7 +83,7 @@ class Board():
 
 class Piece():
 
-    def __init__(self, color):
+    def __init__(self, color, board):
         self.color = color
         self.directions = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"), (-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW"))
         self.cardinalDirections = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"))
@@ -91,7 +91,7 @@ class Piece():
         self.Nmoves = ((), (), (), (), (), (), (), ()) # knight moves
         # slide function not in here to repeatedly use one "king move" until hit piece
         # for pawn moves it's a procedure
-
+        self.board = board
         # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
 
     # eventually need a list for attacked squares and unattacked ones so to check checks against the king
