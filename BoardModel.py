@@ -45,11 +45,11 @@ class Board():
             elif self.is_int(char):
                 i += int(char)
             elif char.isupper():
-                piece = self.abbrv_to_piece(char, "White")
+                piece = self.abbrv_to_piece(char, "White", self.board)
                 self.board[i] = piece
                 i += 1
             else:
-                piece = self.abbrv_to_piece(char, "Black")
+                piece = self.abbrv_to_piece(char, "Black", self.board)
                 self.board[i] = piece
                 i += 1
 
