@@ -22,12 +22,12 @@ class Board():
 
     def abbrv_to_piece(self, str, color):
         str = str.lower()
-        if str == "p": return Pawn(color)
-        elif str == "r": return Rook(color)
-        elif str == "n": return Knight(color)
-        elif str == "b": return Bishop(color)
-        elif str == "q": return Queen(color)
-        elif str == "k": return King(color)
+        if str == "p": return Pawn(color, self.board)
+        elif str == "r": return Rook(color, self.board)
+        elif str == "n": return Knight(color, self.board)
+        elif str == "b": return Bishop(color, self.board)
+        elif str == "q": return Queen(color, self.board)
+        elif str == "k": return King(color, self.board)
 
     def is_int(self, str):
         try:
@@ -45,11 +45,11 @@ class Board():
             elif self.is_int(char):
                 i += int(char)
             elif char.isupper():
-                piece = self.abbrv_to_piece(char, "White", self.board)
+                piece = self.abbrv_to_piece(char, "White")
                 self.board[i] = piece
                 i += 1
             else:
-                piece = self.abbrv_to_piece(char, "Black", self.board)
+                piece = self.abbrv_to_piece(char, "Black")
                 self.board[i] = piece
                 i += 1
 
@@ -186,9 +186,6 @@ class Bishop(Piece):
 
 class Knight(Piece):
 
-    def __init__(self, color):
-        self.color = color
-
     def __str__(self):
         if self.color == "White":
             return "N"
@@ -221,7 +218,7 @@ class Rook(Piece):
 
 class Pawn(Piece):
 
-    def __init__(self, color):
+    def __init__(self, color, board):
         self.color = color
         self.double = True
         self.passant = False
@@ -229,6 +226,8 @@ class Pawn(Piece):
             self.directions = ((-8, "N"), (), ())
         else: # move down on board
             self.directions = ((8, "S"), (), ())
+
+        self.board = board
 
     def __str__(self):
         if self.color == "White":
