@@ -107,9 +107,12 @@ class Piece():
         elif sr == er and sf > ef: return "W" # 0 1 2 3 4 5 6 7 8 file
 
     def is_piece(self, target):
-        pass
+        if self.board[target] != 0:
+            return True
+        return False
 
     def is_same_color(self, color, target):
+        target = self.board[color]
         if target.color == color:
             return True
         return False 
