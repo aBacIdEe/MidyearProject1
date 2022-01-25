@@ -88,7 +88,7 @@ class Piece():
         self.directions = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"), (-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW"))
         self.cardinalDirections = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"))
         self.diagonalDirections = ((-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW"))
-        self.Nmoves = ((), (), (), (), (), (), (), ()) # knight moves
+        self.Nmoves = ((-15, "NE"), (-6, "NE"), (10, "SE"), (17, "SE"), (6, "SW"), (15, "SW"), (-10, "NW"), (-17, "NW")) # knight moves
         # slide function not in here to repeatedly use one "king move" until hit piece
         # for pawn moves it's a procedure
         self.board = board
@@ -105,6 +105,14 @@ class Piece():
         elif sr > er and sf == ef: return "S" # 2
         elif sr == er and sf < ef: return "E" # 1
         elif sr == er and sf > ef: return "W" # 0 1 2 3 4 5 6 7 8 file
+
+    def is_piece(self, target):
+        pass
+
+    def is_same_color(self, color, target):
+        if target.color == color:
+            return True
+        return False 
 
     def location_to_index(self, sr, sf, er, ef): # from rank and file to index
         pass
