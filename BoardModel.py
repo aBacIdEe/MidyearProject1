@@ -225,10 +225,10 @@ class Pawn(Piece):
         self.color = color
         self.double = True
         self.passant = False
-        if self.color == "White": # move up on board
-            self.directions = ((-8, "N"), (), ())
+        if self.color == "White": # move up on board 
+            self.directions = (-8, "N") # note: make third state to decide validitiy
         else: # move down on board
-            self.directions = ((8, "S"), (), ())
+            self.directions = (8, "S")
 
         self.board = board
 
@@ -237,13 +237,23 @@ class Pawn(Piece):
             return "P"
         return "p"
 
-    def moves(self):
-        pass
+    def moves(self, sr, sf, er, ef):
+        position = (8 - sr) * 8 + sf
+        goal = (8 - er) * 8 + ef
+        valid = []
+
+        if self.double:
+            self.directions = ()
+
+        if self.color == "White":
+            pass
+        else:
+            pass
 
 chess = Board()
 chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
 print(str(chess))
 chess.move_piece("d1", "d5")
 print(str(chess))
-chess.move_piece("d5", "b6")
+chess.move_piece("d5", "c6")
 print(str(chess))
