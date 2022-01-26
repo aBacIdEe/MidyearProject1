@@ -235,9 +235,9 @@ class Pawn(Piece):
         self.double = True
         self.passant = False
         if self.color == "White": # move up on board 
-            self.directions = ((-8, "N", True), (-16, "N", True), ()) # note: make third state to decide validitiy
+            self.directions = [(-8, "N", True), (-16, "N", True), (-7, "NE", False), (-9, "NW", False)] # note: make third state to decide validitiy
         else: # move down on board
-            self.directions = (8, "S")
+            self.directions = [(8, "S", True), (16, "S", True), (9, "SE", False), (7, "SW", False)]
 
         self.board = board
 
@@ -252,19 +252,24 @@ class Pawn(Piece):
         valid = []
 
         if self.color == "White":
+            if self.is_piece(position - 8):
+                self.directions[0] = (-8, "N", False)
             if self.is_piece(position - 7):
                 self.directions[2] = (-7, "NE", True)
             if self.is_piece(position -9):
                 self.directions[3] = (-9, "NW", True)
         elif self.color == "Black":
+            if self.is_piece(position + 8):
+                self.directions[0] = (8, "S", False)
             if self.is_piece(position + 9):
                 self.directions[2] = (9, "SE", True)
             if self.is_piece(position + 7):
                 self.directions[3] = (7, "SW", True)
 
+
         for dir in self.directions:
             possibility = position + dir[0]
-            if 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
+            if 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1] and dir[2]:
                 valid.append(possibility)
         
         self.reset_directions()
@@ -276,14 +281,18 @@ class Pawn(Piece):
 
     def reset_directions(self):
         if self.color == "White":
-            self.directions = ((-8, "N", True), (-16, "N", False), (-7, "NE", False), (-9, "NW", False))
+            self.directions = [(-8, "N", True), (-16, "N", False), (-7, "NE", False), (-9, "NW", False)]
         else:
-            self.directions = ((8, "S", True), (16, "S", False), (9, "SE", False), (7, "SW", False))
+            self.directions = [(8, "S", True), (16, "S", False), (9, "SE", False), (7, "SW", False)]
 
 chess = Board()
-chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPP1PPPP/RNBQKBNR")
+chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
 print(str(chess))
-chess.move_piece("d1", "d5")
+chess.move_piece("e2", "e4")
 print(str(chess))
-chess.move_piece("d5", "b7")
+chess.move_piece("e4", "e5")
+print(str(chess))
+chess.move_piece("e5", "e6")
+print(str(chess))
+chess.move_piece("e6", "d7")
 print(str(chess))
