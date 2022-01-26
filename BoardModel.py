@@ -65,7 +65,9 @@ class Board():
         endIndex = Efile + 8 * (8 - Erank)
 
         piece = self.board[startIndex]
-        if piece.moves(Srank, Sfile, Erank, Efile):
+        if piece == 0:
+            self.move_confirmation(False)
+        elif piece.moves(Srank, Sfile, Erank, Efile):
             self.move_confirmation(True)
             self.board[endIndex] = self.board[startIndex]
             self.board[startIndex] = 0
@@ -112,7 +114,7 @@ class Piece():
         return False
 
     def is_same_color(self, color, target):
-        target = self.board[color]
+        target = self.board[target]
         if target.color == color:
             return True
         return False 
@@ -158,8 +160,15 @@ class Queen(Piece):
         for dir in self.directions:
             possibility = position + dir[0]
             while 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
-                valid.append(possibility)
-                possibility += dir[0]
+                if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
+                    break # if the endpoint is of same color, break
+
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
+
+                if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
+                    valid.append(possibility) # if endpoint is of opposite color
+                    break # taking is as far as you can go, and break
 
         if goal in valid:
             return True
@@ -251,9 +260,9 @@ class Pawn(Piece):
             pass
 
 chess = Board()
-chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPP1PPPP/RNBQKBNR")
 print(str(chess))
 chess.move_piece("d1", "d5")
 print(str(chess))
-chess.move_piece("d5", "c6")
+chess.move_piece("d5", "b7")
 print(str(chess))
