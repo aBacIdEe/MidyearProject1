@@ -235,7 +235,7 @@ class Pawn(Piece):
         self.double = True
         self.passant = False
         if self.color == "White": # move up on board 
-            self.directions = (-8, "N") # note: make third state to decide validitiy
+            self.directions = ((-8, "N", True), (-16, "N", True), ()) # note: make third state to decide validitiy
         else: # move down on board
             self.directions = (8, "S")
 
@@ -251,13 +251,34 @@ class Pawn(Piece):
         goal = (8 - er) * 8 + ef
         valid = []
 
-        if self.double:
-            self.directions = ()
-
         if self.color == "White":
-            pass
+            if self.is_piece(position - 7):
+                self.directions[2] = (-7, "NE", True)
+            if self.is_piece(position -9):
+                self.directions[3] = (-9, "NW", True)
+        elif self.color == "Black":
+            if self.is_piece(position + 9):
+                self.directions[2] = (9, "SE", True)
+            if self.is_piece(position + 7):
+                self.directions[3] = (7, "SW", True)
+
+        for dir in self.directions:
+            possibility = position + dir[0]
+            if 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
+                valid.append(possibility)
+        
+        self.reset_directions()
+
+        if goal in valid:
+            return True
+        return False
+                
+
+    def reset_directions(self):
+        if self.color == "White":
+            self.directions = ((-8, "N", True), (-16, "N", False), (-7, "NE", False), (-9, "NW", False))
         else:
-            pass
+            self.directions = ((8, "S", True), (16, "S", False), (9, "SE", False), (7, "SW", False))
 
 chess = Board()
 chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPP1PPPP/RNBQKBNR")
