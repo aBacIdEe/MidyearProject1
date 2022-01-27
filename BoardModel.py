@@ -90,7 +90,7 @@ class Piece():
         self.directions = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"), (-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW"))
         self.cardinalDirections = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"))
         self.diagonalDirections = ((-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW"))
-        self.Nmoves = ((-15, "NE"), (-6, "NE"), (10, "SE"), (17, "SE"), (6, "SW"), (15, "SW"), (-10, "NW"), (-17, "NW")) # knight moves
+        self.knightDirections = ((-15, "NE"), (-6, "NE"), (10, "SE"), (17, "SE"), (6, "SW"), (15, "SW"), (-10, "NW"), (-17, "NW")) # knight moves
         # slide function not in here to repeatedly use one "king move" until hit piece
         # for pawn moves it's a procedure
         self.board = board
@@ -203,8 +203,20 @@ class Knight(Piece):
             return "N"
         return "n"
 
-    def moves(self):
-        pass
+    def moves(self, sr, sf, er, ef):
+        position = (8 - sr) * 8 + sf
+        goal = (8 - er) * 8 + ef
+        valid = []
+
+         # N E S W NE SE SW NW
+        for dir in self.knightDirections:
+            possibility = position + dir[0]
+            if 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
+                valid.append(possibility)
+            
+        if goal in valid:
+            return True
+        return False
 
 class Rook(Piece):
 
