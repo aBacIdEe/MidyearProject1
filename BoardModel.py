@@ -297,14 +297,18 @@ class Pawn(Piece):
         else:
             self.directions = [(8, "S", True), (16, "S", False), (9, "SE", False), (7, "SW", False)]
 
-chess = Board()
-chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
-print(str(chess))
-chess.move_piece("e2", "e4")
-print(str(chess))
-chess.move_piece("e4", "e5")
-print(str(chess))
-chess.move_piece("e5", "e6")
-print(str(chess))
-chess.move_piece("e6", "e7")
-print(str(chess))
+
+def main():
+    chess = Board()
+    chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+    print(str(chess))
+    chess.move_piece("e2", "e4")
+    print(str(chess))
+    chess.move_piece("e4", "e5")
+    print(str(chess))
+    chess.move_piece("e5", "e6")
+    print(str(chess))
+    chess.move_piece("e6", "e7")
+    print(str(chess))
+
+# main()
