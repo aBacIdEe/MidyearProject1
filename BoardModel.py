@@ -122,6 +122,9 @@ class Piece():
     def location_to_index(self, sr, sf, er, ef): # from rank and file to index
         pass
 
+    def in_check(self, color):
+        pass
+
 
 class King(Piece):
         
@@ -159,7 +162,7 @@ class Queen(Piece):
 
         for dir in self.directions:
             possibility = position + dir[0]
-            while 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
+            while 0 <= possibility < 64 and self.orientation(sr, sf, possibility // 8, possibility % 8) == dir[1]:
                 if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
                     break # if the endpoint is of same color, break
 
@@ -300,15 +303,15 @@ class Pawn(Piece):
 
 def main():
     chess = Board()
-    chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+    chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPP1PPPP/RNBQKBNR")
     print(str(chess))
-    chess.move_piece("e2", "e4")
+    chess.move_piece("d1", "d7")
     print(str(chess))
-    chess.move_piece("e4", "e5")
+    chess.move_piece("d7", "e6")
     print(str(chess))
-    chess.move_piece("e5", "e6")
+    chess.move_piece("e6", "e8")
     print(str(chess))
     chess.move_piece("e6", "e7")
     print(str(chess))
 
-# main()
+main()
