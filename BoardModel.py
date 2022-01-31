@@ -141,7 +141,7 @@ class King(Piece):
          # N E S W NE SE SW NW
         for dir in self.directions:
             possibility = position + dir[0]
-            if 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
+            if 0 <= possibility < 64 and self.orientation(sr, sf, possibility // 8, possibility % 8) == dir[1]:
                 valid.append(possibility)
             
         if goal in valid:
@@ -191,9 +191,16 @@ class Bishop(Piece):
 
         for dir in self.diagonalDirections:
             possibility = position + dir[0]
-            while 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
-                valid.append(possibility)
-                possibility += dir[0]
+            while 0 <= possibility < 64 and self.orientation(sr, sf, possibility // 8, possibility % 8) == dir[1]:
+                if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
+                    break # if the endpoint is of same color, break
+
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
+
+                if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
+                    valid.append(possibility) # if endpoint is of opposite color
+                    break # taking is as far as you can go, and break
 
         if goal in valid:
             return True
@@ -214,8 +221,11 @@ class Knight(Piece):
          # N E S W NE SE SW NW
         for dir in self.knightDirections:
             possibility = position + dir[0]
-            if 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
-                valid.append(possibility)
+            if 0 <= possibility < 64 and self.orientation(sr, sf, possibility // 8, possibility % 8) == dir[1]:
+                if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
+                    continue # if the endpoint is of same color, break
+                else:
+                    valid.append(possibility)
             
         if goal in valid:
             return True
@@ -235,9 +245,16 @@ class Rook(Piece):
 
         for dir in self.cardinalDirections:
             possibility = position + dir[0]
-            while 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
-                valid.append(possibility)
-                possibility += dir[0]
+            while 0 <= possibility < 64 and self.orientation(sr, sf, possibility // 8, possibility % 8) == dir[1]:
+                if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
+                    break # if the endpoint is of same color, break
+
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
+
+                if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
+                    valid.append(possibility) # if endpoint is of opposite color
+                    break # taking is as far as you can go, and break
 
         if goal in valid:
             return True
@@ -266,7 +283,7 @@ class Pawn(Piece):
         goal = (8 - er) * 8 + ef
         valid = []
 
-        if self.color == "White":
+        if self.color == "White": # ADD CHECK IF PIECE UPAHEAD FOR DOUBLE JUMP
             if self.is_piece(position - 8):
                 self.directions[0] = (-8, "N", False)
             if self.is_piece(position - 7):
@@ -284,8 +301,11 @@ class Pawn(Piece):
 
         for dir in self.directions:
             possibility = position + dir[0]
-            if 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1] and dir[2]:
-                valid.append(possibility)
+            if 0 <= possibility < 64 and self.orientation(sr, sf, possibility // 8, possibility % 8) == dir[1] and dir[2]:
+                if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
+                    continue # if the endpoint is of same color, break
+                else:
+                    valid.append(possibility) # adds possibility if empty 
         
         self.reset_directions()
 
