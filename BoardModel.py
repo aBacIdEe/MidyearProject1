@@ -264,12 +264,11 @@ class Pawn(Piece):
 
     def __init__(self, color, board):
         self.color = color
-        self.double = True
         self.passant = False
         if self.color == "White": # move up on board 
-            self.directions = [(-8, "N", True), (-16, "N", True), (-7, "NE", False), (-9, "NW", False)] # note: make third state to decide validitiy
+            self.directions = [(-8, "N", True), (-16, "N", True), (-7, "NE", False), (-9, "NW", False), (-16, "N", True)] # note: make third state to decide validitiy
         else: # move down on board
-            self.directions = [(8, "S", True), (16, "S", True), (9, "SE", False), (7, "SW", False)]
+            self.directions = [(8, "S", True), (16, "S", True), (9, "SE", False), (7, "SW", False), (16, "S", True)]
 
         self.board = board
 
@@ -283,9 +282,10 @@ class Pawn(Piece):
         goal = (8 - er) * 8 + ef
         valid = []
 
-        if self.color == "White": # ADD CHECK IF PIECE UPAHEAD FOR DOUBLE JUMP
+        if self.color == "White": # ADDED CHECK IF PIECE UPAHEAD FOR DOUBLE JUMP
             if self.is_piece(position - 8):
                 self.directions[0] = (-8, "N", False)
+                self.directions[4] = (-16, "N", False)
             if self.is_piece(position - 7):
                 self.directions[2] = (-7, "NE", True)
             if self.is_piece(position -9):
@@ -293,6 +293,7 @@ class Pawn(Piece):
         elif self.color == "Black":
             if self.is_piece(position + 8):
                 self.directions[0] = (8, "S", False)
+                self.directions[4] = (16, "S", False)
             if self.is_piece(position + 9):
                 self.directions[2] = (9, "SE", True)
             if self.is_piece(position + 7):
@@ -316,9 +317,9 @@ class Pawn(Piece):
 
     def reset_directions(self):
         if self.color == "White":
-            self.directions = [(-8, "N", True), (-16, "N", False), (-7, "NE", False), (-9, "NW", False)]
+            self.directions = [(-8, "N", True), (-16, "N", False), (-7, "NE", False), (-9, "NW", False), (-16, "N", False)]
         else:
-            self.directions = [(8, "S", True), (16, "S", False), (9, "SE", False), (7, "SW", False)]
+            self.directions = [(8, "S", True), (16, "S", False), (9, "SE", False), (7, "SW", False), (16, "S", False)]
 
 
 def main():
