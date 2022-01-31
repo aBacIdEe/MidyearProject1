@@ -8,11 +8,14 @@ class Timer():
 
     def pause_timer(self):
         self.update_timer(False)
+        #this should be done when a player makes a move
 
     def resume_timer(self):
         self.update_timer(True)
+        #this should be done when the other player makes a move
 
     def update_timer(self, truefalse):
+        #updates clock every second
         while truefalse == True:
             # TODO
             pass
@@ -20,5 +23,5 @@ class Timer():
         pass
 
     def add_increment(self):
-        #adds given increment to time
-        pass
+        self.time += self.increment
+        #this should be done when a player makes a move
