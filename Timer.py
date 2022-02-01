@@ -28,11 +28,11 @@ class Timer():
 
     def update_timer(self, truefalse):
         #updates clock every second
-        while truefalse == True:
-            # TODO
-            pass
-        # TODO
-        pass
+        if self.time > 0:
+            while truefalse == True:
+                time.sleep(1)
+                self.show_time -= 1
+        #what do I do when time runs out?
 
     def add_increment(self):
         self.time += self.increment
