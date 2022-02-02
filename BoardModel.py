@@ -123,6 +123,17 @@ class Piece():
     def location_to_index(self, sr, sf, er, ef): # from rank and file to index
         pass
 
+    def king_in_check(self):
+        if self.color == "White":
+            for location in self.board:
+                if location != 0 and str(location) == "K" and location.in_check():
+                    return True
+        else:
+            for location in self.board:
+                if location != 0 and str(location) == "k" and location.in_check():
+                    return True
+        return False
+
 
 
 class King(Piece):
