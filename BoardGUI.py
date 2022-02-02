@@ -21,14 +21,14 @@ class Application(Frame):
             for column in range(1,9):
                 if row%2==0:
                     if column%2==0:
-                        Button(self, width=6, height=3, bg='tan').grid(row=row,column=column)
-                    else:
                         Button(self, width=6, height=3, bg='white').grid(row=row,column=column)
+                    else:
+                        Button(self, width=6, height=3, bg='tan').grid(row=row,column=column)
                 elif row%2==1:
                     if column%2==1:
-                        Button(self, width=6, height=3, bg='tan').grid(row=row,column=column)
-                    else:
                         Button(self, width=6, height=3, bg='white').grid(row=row,column=column)
+                    else:
+                        Button(self, width=6, height=3, bg='tan').grid(row=row,column=column)
 
             Label(self, text=row).grid(row=9-row,column=0)
         for i in range(len(self.rowLabels)):
