@@ -6,7 +6,7 @@ class Timer():
         self.time = time #should be less than a day
         self.increment = increment
 
-    def show_time(self):
+    def __str__(self):
         minutes = 0
         hours = 0
         for min in range(0, self.time, 60):
