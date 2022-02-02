@@ -25,16 +25,16 @@ class Application(Frame):
                 if row%2==0:
                     if column%2==0:
                         # self.printPos(row,column)
-                        bttn = Button(self, width=6, height=3, bg='tan', command=(lambda r,c: lambda:self.printPos(r,c))(row,column) ).grid(row=row,column=column)
+                        bttn = Button(self, width=6, height=3, bg='white', command=(lambda r,c: lambda:self.printPos(r,c))(row,column) ).grid(row=row,column=column)
                     else:
                         # self.printPos(row,column)
-                        Button(self, width=6, height=3, bg='white', command=lambda:self.printPos(row,column)).grid(row=row,column=column)
+                        Button(self, width=6, height=3, bg='tan', command=lambda:self.printPos(row,column)).grid(row=row,column=column)
                 else:
                     if column%2==1:
-                        Button(self, width=6, height=3, bg='tan', command=lambda:self.printPos(row,column)).grid(row=row,column=column)
+                        Button(self, width=6, height=3, bg='white', command=lambda:self.printPos(row,column)).grid(row=row,column=column)
                     else:
                         # self.printPos(row,column)
-                        Button(self, width=6, height=3, bg='white', command=lambda: self.printPos(row,column)).grid(row=row,column=column)
+                        Button(self, width=6, height=3, bg='tan', command=lambda: self.printPos(row,column)).grid(row=row,column=column)
 
             Label(self, text=row).grid(row=9-row,column=0)
         for i in range(len(self.rowLabels)):
