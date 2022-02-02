@@ -45,11 +45,11 @@ class Board():
             elif self.is_int(char):
                 i += int(char)
             elif char.isupper():
-                piece = self.abbrv_to_piece(char, "White")
+                piece = self.abbrv_to_piece(char, "White", i)
                 self.board[i] = piece
                 i += 1
             else:
-                piece = self.abbrv_to_piece(char, "Black")
+                piece = self.abbrv_to_piece(char, "Black", i)
                 self.board[i] = piece
                 i += 1
 
@@ -85,7 +85,7 @@ class Board():
 
 class Piece():
 
-    def __init__(self, color, board):
+    def __init__(self, color, board, pos):
         self.color = color
         self.directions = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"), (-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW"))
         self.cardinalDirections = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"))
@@ -95,6 +95,7 @@ class Piece():
         # for pawn moves it's a procedure
         self.board = board
         # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
+        self.position = pos
 
     # eventually need a list for attacked squares and unattacked ones so to check checks against the king
 
@@ -122,8 +123,6 @@ class Piece():
     def location_to_index(self, sr, sf, er, ef): # from rank and file to index
         pass
 
-    def in_check(self, color):
-        pass
 
 
 class King(Piece):
@@ -146,6 +145,30 @@ class King(Piece):
             
         if goal in valid:
             return True
+        return False
+    
+    def in_check(self):
+        er = self.position // 8
+        ef = self.position % 8
+        enemies = []
+        if self.color == "White":
+            for location in self.board:
+                if location != 0 and location.color == "Black":
+                    enemies.append(location)
+            for enemy in enemies:
+                sr = enemy.position // 8
+                sf = enemy.position % 8
+                if enemy.moves(sr, sf, er, ef):
+                    return True
+        else:
+            for location in self.board:
+                if location != 0 and location.color == "White":
+                    enemies.append(location)
+            for enemy in enemies:
+                sr = enemy.position // 8
+                sf = enemy.position % 8
+                if enemy.moves(sr, sf, er, ef):
+                    return True
         return False
 
 class Queen(Piece):
