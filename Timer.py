@@ -5,6 +5,7 @@ class Timer():
         #time is given as number of seconds
         self.time = time #should be less than a day
         self.increment = increment
+        self.resume_timer()
 
     def __str__(self):
         minutes = -1
@@ -28,9 +29,11 @@ class Timer():
 
     def update_timer(self, truefalse):
         #updates clock every second
-        if truefalse == True and self.time > 0:
-            time.sleep(1)
-            self.time -= 1
+        if self.time > 0:
+            while truefalse == True:
+                time.sleep(1)
+                self.time -= 1
+        #what do I do when time runs out?
 
     def add_increment(self):
         self.time += self.increment
