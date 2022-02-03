@@ -20,14 +20,14 @@ class Board():
         base = ord("a")
         return ord(letter) - base
 
-    def abbrv_to_piece(self, str, color):
+    def abbrv_to_piece(self, str, color, location):
         str = str.lower()
-        if str == "p": return Pawn(color, self.board)
-        elif str == "r": return Rook(color, self.board)
-        elif str == "n": return Knight(color, self.board)
-        elif str == "b": return Bishop(color, self.board)
-        elif str == "q": return Queen(color, self.board)
-        elif str == "k": return King(color, self.board)
+        if str == "p": return Pawn(color, self.board, location)
+        elif str == "r": return Rook(color, self.board, location)
+        elif str == "n": return Knight(color, self.board, location)
+        elif str == "b": return Bishop(color, self.board, location)
+        elif str == "q": return Queen(color, self.board, location)
+        elif str == "k": return King(color, self.board, location)
 
     def is_int(self, str):
         try:
@@ -45,11 +45,11 @@ class Board():
             elif self.is_int(char):
                 i += int(char)
             elif char.isupper():
-                piece = self.abbrv_to_piece(char, "White")
+                piece = self.abbrv_to_piece(char, "White", i)
                 self.board[i] = piece
                 i += 1
             else:
-                piece = self.abbrv_to_piece(char, "Black")
+                piece = self.abbrv_to_piece(char, "Black", i)
                 self.board[i] = piece
                 i += 1
 
@@ -65,18 +65,35 @@ class Board():
         endIndex = Efile + 8 * (8 - Erank)
 
         piece = self.board[startIndex]
-        if piece == 0:
-            self.move_confirmation(False)
-        elif piece.moves(Srank, Sfile, Erank, Efile):
-            self.move_confirmation(True)
-            self.board[endIndex] = self.board[startIndex]
-            self.board[startIndex] = 0
+        if piece != 0:
+            if piece.color != self.turn:
+                self.move_confirmation(False)
+            elif piece.moves(Srank, Sfile, Erank, Efile):
+                temp = self.board[endIndex]
+                self.board[endIndex] = self.board[startIndex]
+                self.board[startIndex] = 0
+                tempPos = piece.position
+                piece.position = self.board.index(piece)
+                if piece.king_in_check(): # After seeing if a move is valid, make that move and check if your king is still in check
+                    self.board[startIndex] = self.board[endIndex] # if it is, then it undos the move and says invalid
+                    self.board[endIndex] = temp
+                    piece.position = tempPos
+                    self.move_confirmation(False)
+                else: # otherwise it goes through
+                    piece.position = self.board.index(piece)
+                    self.move_confirmation(True)
+            else:
+                self.move_confirmation(False)
         else:
             self.move_confirmation(False)
 
     def move_confirmation(self, valid):
         if valid:
             print("move made")
+            if self.turn == "White":
+                self.turn = "Black"
+            else:
+                self.turn = "White"
         else:
             print("invalid move")
 
@@ -85,7 +102,7 @@ class Board():
 
 class Piece():
 
-    def __init__(self, color, board):
+    def __init__(self, color, board, pos):
         self.color = color
         self.directions = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"), (-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW"))
         self.cardinalDirections = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"))
@@ -95,11 +112,12 @@ class Piece():
         # for pawn moves it's a procedure
         self.board = board
         # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
+        self.position = pos
 
     # eventually need a list for attacked squares and unattacked ones so to check checks against the king
 
     def orientation(self, sr, sf, er, ef): # prevent board wrapping moves
-        if sr < er and sf < ef: return "NE" # i think it's fixed...it's not fixed
+        if sr < er and sf < ef: return "NE" # i think it's fixed...it's not fixed...maybe it is fixed
         elif sr < er and sf > ef: return "NW" # 6 ranks
         elif sr > er and sf < ef: return "SE" # 5
         elif sr > er and sf > ef: return "SW" # 4
@@ -109,7 +127,7 @@ class Piece():
         elif sr == er and sf > ef: return "W" # 0 1 2 3 4 5 6 7 8 file
 
     def is_piece(self, target):
-        if self.board[target] != 0:
+        if 0 <= target < 64 and self.board[target] != 0:
             return True
         return False
 
@@ -121,6 +139,18 @@ class Piece():
 
     def location_to_index(self, sr, sf, er, ef): # from rank and file to index
         pass
+
+    def king_in_check(self):
+        if self.color == "White":
+            for location in self.board:
+                if location != 0 and str(location) == "K" and location.in_check():
+                    return True
+        else:
+            for location in self.board:
+                if location != 0 and str(location) == "k" and location.in_check():
+                    return True
+        return False
+
 
 
 class King(Piece):
@@ -138,11 +168,35 @@ class King(Piece):
          # N E S W NE SE SW NW
         for dir in self.directions:
             possibility = position + dir[0]
-            if 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
+            if 0 <= possibility < 64 and self.orientation(sr, sf, 8 - possibility // 8, possibility % 8) == dir[1]:
                 valid.append(possibility)
             
         if goal in valid:
             return True
+        return False
+    
+    def in_check(self):
+        er = 8 - self.position // 8
+        ef = self.position % 8
+        enemies = []
+        if self.color == "White":
+            for location in self.board:
+                if location != 0 and location.color == "Black":
+                    enemies.append(location)
+            for enemy in enemies:
+                sr = 8 - enemy.position // 8
+                sf = enemy.position % 8
+                if enemy.moves(sr, sf, er, ef):
+                    return True
+        else:
+            for location in self.board:
+                if location != 0 and location.color == "White":
+                    enemies.append(location)
+            for enemy in enemies:
+                sr = 8 - enemy.position // 8
+                sf = enemy.position % 8
+                if enemy.moves(sr, sf, er, ef):
+                    return True
         return False
 
 class Queen(Piece):
@@ -159,7 +213,7 @@ class Queen(Piece):
 
         for dir in self.directions:
             possibility = position + dir[0]
-            while 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
+            while 0 <= possibility < 64 and self.orientation(sr, sf, 8 - possibility // 8, possibility % 8) == dir[1]:
                 if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
                     break # if the endpoint is of same color, break
 
@@ -188,9 +242,16 @@ class Bishop(Piece):
 
         for dir in self.diagonalDirections:
             possibility = position + dir[0]
-            while 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
-                valid.append(possibility)
-                possibility += dir[0]
+            while 0 <= possibility < 64 and self.orientation(sr, sf, 8 - possibility // 8, possibility % 8) == dir[1]:
+                if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
+                    break # if the endpoint is of same color, break
+
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
+
+                if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
+                    valid.append(possibility) # if endpoint is of opposite color
+                    break # taking is as far as you can go, and break
 
         if goal in valid:
             return True
@@ -211,8 +272,11 @@ class Knight(Piece):
          # N E S W NE SE SW NW
         for dir in self.knightDirections:
             possibility = position + dir[0]
-            if 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
-                valid.append(possibility)
+            if 0 <= possibility < 64 and self.orientation(sr, sf, 8 - possibility // 8, possibility % 8) == dir[1]:
+                if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
+                    continue # if the endpoint is of same color, break
+                else:
+                    valid.append(possibility)
             
         if goal in valid:
             return True
@@ -232,9 +296,16 @@ class Rook(Piece):
 
         for dir in self.cardinalDirections:
             possibility = position + dir[0]
-            while 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1]:
-                valid.append(possibility)
-                possibility += dir[0]
+            while 0 <= possibility < 64 and self.orientation(sr, sf, 8 - possibility // 8, possibility % 8) == dir[1]:
+                if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
+                    break # if the endpoint is of same color, break
+
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
+
+                if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
+                    valid.append(possibility) # if endpoint is of opposite color
+                    break # taking is as far as you can go, and break
 
         if goal in valid:
             return True
@@ -242,16 +313,16 @@ class Rook(Piece):
 
 class Pawn(Piece):
 
-    def __init__(self, color, board):
+    def __init__(self, color, board, pos):
         self.color = color
-        self.double = True
         self.passant = False
         if self.color == "White": # move up on board 
-            self.directions = [(-8, "N", True), (-16, "N", True), (-7, "NE", False), (-9, "NW", False)] # note: make third state to decide validitiy
+            self.directions = [(-8, "N", True), (-16, "N", True), (-7, "NE", False), (-9, "NW", False), (-16, "N", True)] # note: make third state to decide validitiy
         else: # move down on board
-            self.directions = [(8, "S", True), (16, "S", True), (9, "SE", False), (7, "SW", False)]
+            self.directions = [(8, "S", True), (16, "S", True), (9, "SE", False), (7, "SW", False), (16, "S", True)]
 
         self.board = board
+        self.position = pos
 
     def __str__(self):
         if self.color == "White":
@@ -263,9 +334,10 @@ class Pawn(Piece):
         goal = (8 - er) * 8 + ef
         valid = []
 
-        if self.color == "White":
+        if self.color == "White": # ADDED CHECK IF PIECE UPAHEAD FOR DOUBLE JUMP
             if self.is_piece(position - 8):
                 self.directions[0] = (-8, "N", False)
+                self.directions[4] = (-16, "N", False)
             if self.is_piece(position - 7):
                 self.directions[2] = (-7, "NE", True)
             if self.is_piece(position -9):
@@ -273,6 +345,7 @@ class Pawn(Piece):
         elif self.color == "Black":
             if self.is_piece(position + 8):
                 self.directions[0] = (8, "S", False)
+                self.directions[4] = (16, "S", False)
             if self.is_piece(position + 9):
                 self.directions[2] = (9, "SE", True)
             if self.is_piece(position + 7):
@@ -281,8 +354,11 @@ class Pawn(Piece):
 
         for dir in self.directions:
             possibility = position + dir[0]
-            if 0 <= possibility < 64 and self.orientation(sr, sf, er, ef) == dir[1] and dir[2]:
-                valid.append(possibility)
+            if 0 <= possibility < 64 and self.orientation(sr, sf, 8 - possibility // 8, possibility % 8) == dir[1] and dir[2]:
+                if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
+                    continue # if the endpoint is of same color, break
+                else:
+                    valid.append(possibility) # adds possibility if empty 
         
         self.reset_directions()
 
@@ -293,18 +369,22 @@ class Pawn(Piece):
 
     def reset_directions(self):
         if self.color == "White":
-            self.directions = [(-8, "N", True), (-16, "N", False), (-7, "NE", False), (-9, "NW", False)]
+            self.directions = [(-8, "N", True), (-16, "N", False), (-7, "NE", False), (-9, "NW", False), (-16, "N", False)]
         else:
-            self.directions = [(8, "S", True), (16, "S", False), (9, "SE", False), (7, "SW", False)]
+            self.directions = [(8, "S", True), (16, "S", False), (9, "SE", False), (7, "SW", False), (16, "S", False)]
 
-chess = Board()
-chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
-print(str(chess))
-chess.move_piece("e2", "e4")
-print(str(chess))
-chess.move_piece("e4", "e5")
-print(str(chess))
-chess.move_piece("e5", "e6")
-print(str(chess))
-chess.move_piece("e6", "e7")
-print(str(chess))
+
+def main():
+    chess = Board()
+    chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPP1PPPP/RNBQKBNR")
+    print(str(chess))
+    chess.move_piece("d1", "d7")
+    print(str(chess))
+    chess.move_piece("e8", "d7")
+    print(str(chess))
+    chess.move_piece("c1", "f4")
+    print(str(chess))
+    chess.move_piece("d7", "d6")
+    print(str(chess))
+
+main()
