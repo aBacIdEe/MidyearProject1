@@ -11,8 +11,7 @@ GRIDLIST = ['a8 b8 c8 d8 e8 f8 g8 h8'.split(),
             'a1 b1 c1 d1 e1 f1 g1 h1'.split()]
         
 chess = bm.Board()
-chess.load_board('rnbqkbnr/pppppppp/8/8/8/8/PPP1PPPP/RNBQKBNR')
-print('',str(chess))
+chess.load_board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')
 class Application(Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -24,23 +23,27 @@ class Application(Frame):
         print(GRIDLIST[r-1][c-1])
 
     def create_widgets(self):
+        x = 0
         self.rowLabels = list('abcdefgh')
         for row in range(1,9):
             for column in range(1,9):
+                t = str(chess.board[x])
+                if t == '0':
+                    t = ''
                 if row%2==0:
                     if column%2==0:
                         # self.printPos(row,column)
-                        Button(self, width=6, height=3, bg='white', command=(lambda r,c: lambda:self.printPos(r,c))(row,column) ).grid(row=row,column=column)
+                        Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.printPos(r,c))(row,column) ).grid(row=row,column=column)
                     else:
                         # self.printPos(row,column)
-                        Button(self, width=6, height=3, bg='tan', command=(lambda r,c: lambda:self.printPos(r,c))(row,column)).grid(row=row,column=column)
+                        Button(self, width=6, height=3, text=t, bg='tan', command=(lambda r,c: lambda:self.printPos(r,c))(row,column)).grid(row=row,column=column)
                 else:
                     if column%2==1:
-                        Button(self, width=6, height=3, bg='white', command=(lambda r,c: lambda:self.printPos(r,c))(row,column)).grid(row=row,column=column)
+                        Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.printPos(r,c))(row,column)).grid(row=row,column=column)
                     else:
                         # self.printPos(row,column)
-                        Button(self, width=6, height=3, bg='tan', command=(lambda r,c: lambda:self.printPos(r,c))(row,column)).grid(row=row,column=column)
-
+                        Button(self, width=6, height=3, text=t,bg='tan', command=(lambda r,c: lambda:self.printPos(r,c))(row,column)).grid(row=row,column=column)
+                x += 1
             Label(self, text=row).grid(row=9-row,column=0)
         for i in range(len(self.rowLabels)):
             Label(self, text=self.rowLabels[i]).grid(row=9,column=i+1)
