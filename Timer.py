@@ -28,12 +28,25 @@ class Timer():
 
     def update_timer(self, truefalse):
         #updates clock every second
-        if self.time > 0:
-            while truefalse == True:
-                time.sleep(1)
-                self.show_time -= 1
-        #what do I do when time runs out?
+        if truefalse == True and self.time > 0:
+            time.sleep(1)
+            self.time -= 1
 
     def add_increment(self):
         self.time += self.increment
         #this should be done when a player makes a move
+
+obj = Timer(1000,10)
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
+obj.resume_timer()
+print(str(obj))

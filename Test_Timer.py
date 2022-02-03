@@ -1,4 +1,8 @@
-import Timer as tm
+import datetime
+import time
+def clock():
+    while True:
+        print(datetime.datetime.now().strftime("%H:%M:%S"), end="\r")
+        time.sleep(1)
 
-obj = tm.Timer(1000,10)
-print(str(obj))
+clock()
