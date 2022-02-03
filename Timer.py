@@ -7,8 +7,8 @@ class Timer():
         self.increment = increment
 
     def __str__(self):
-        minutes = 0
-        hours = 0
+        minutes = -1
+        hours = -1
         for min in range(0, self.time, 60):
             minutes += 1
         for hour in range(0, minutes, 60):
