@@ -68,9 +68,15 @@ class Board():
         if piece == 0:
             self.move_confirmation(False)
         elif piece.moves(Srank, Sfile, Erank, Efile):
-            self.move_confirmation(True)
+            temp = self.board[endIndex]
             self.board[endIndex] = self.board[startIndex]
             self.board[startIndex] = 0
+            if piece.king_in_check(): # After seeing if a move is valid, make that move and check if your king is till in check
+                self.board[startIndex] = self.board[endIndex] # if it is, then it undos the move and says invalid
+                self.board[endIndex] = temp
+                self.move_confirmation(False)
+            else: # otherwise it goes through
+                self.move_confirmation(True)
         else:
             self.move_confirmation(False)
 
