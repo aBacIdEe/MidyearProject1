@@ -65,24 +65,31 @@ class Board():
         endIndex = Efile + 8 * (8 - Erank)
 
         piece = self.board[startIndex]
-        if piece == 0:
-            self.move_confirmation(False)
-        elif piece.moves(Srank, Sfile, Erank, Efile):
-            temp = self.board[endIndex]
-            self.board[endIndex] = self.board[startIndex]
-            self.board[startIndex] = 0
-            if piece.king_in_check(): # After seeing if a move is valid, make that move and check if your king is till in check
-                self.board[startIndex] = self.board[endIndex] # if it is, then it undos the move and says invalid
-                self.board[endIndex] = temp
+        if piece.color == self.turn:
+            if piece == 0:
                 self.move_confirmation(False)
-            else: # otherwise it goes through
-                self.move_confirmation(True)
+            elif piece.moves(Srank, Sfile, Erank, Efile):
+                temp = self.board[endIndex]
+                self.board[endIndex] = self.board[startIndex]
+                self.board[startIndex] = 0
+                if piece.king_in_check(): # After seeing if a move is valid, make that move and check if your king is till in check
+                    self.board[startIndex] = self.board[endIndex] # if it is, then it undos the move and says invalid
+                    self.board[endIndex] = temp
+                    self.move_confirmation(False)
+                else: # otherwise it goes through
+                    self.move_confirmation(True)
+            else:
+                self.move_confirmation(False)
         else:
             self.move_confirmation(False)
 
     def move_confirmation(self, valid):
         if valid:
             print("move made")
+            if self.turn == "White":
+                self.turn == "Black"
+            else:
+                self.turn == "White"
         else:
             print("invalid move")
 
