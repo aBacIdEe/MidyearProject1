@@ -117,7 +117,7 @@ class Piece():
     # eventually need a list for attacked squares and unattacked ones so to check checks against the king
 
     def orientation(self, sr, sf, er, ef): # prevent board wrapping moves
-        if sr < er and sf < ef: return "NE" # i think it's fixed...it's not fixed
+        if sr < er and sf < ef: return "NE" # i think it's fixed...it's not fixed...maybe it is fixed
         elif sr < er and sf > ef: return "NW" # 6 ranks
         elif sr > er and sf < ef: return "SE" # 5
         elif sr > er and sf > ef: return "SW" # 4
