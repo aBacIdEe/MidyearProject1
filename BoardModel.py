@@ -437,4 +437,4 @@ def main():
     chess.move_piece("d7", "d6")
     print(str(chess))
 
-main()
+# main()
