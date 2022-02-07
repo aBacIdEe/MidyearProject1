@@ -80,6 +80,13 @@ class Board():
                     piece.position = tempPos
                     self.move_confirmation(False)
                 else: # otherwise it goes through
+                    if str(piece).lower() == "k": # if king is being moved
+                        if startIndex - endIndex == -2: # short castle
+                            self.board[startIndex + 1] = self.board[startIndex + 3]
+                            self.board[startIndex + 3] = 0
+                        elif startIndex - endIndex == 2: # long castle
+                            self.board[startIndex - 1] = self.board[startIndex - 4]
+                            self.board[startIndex - 4] = 0
                     piece.position = self.board.index(piece)
                     self.move_confirmation(True)
             else:
@@ -96,6 +103,30 @@ class Board():
                 self.turn = "White"
         else:
             print("invalid move")
+
+    def in_check(self, position, color):
+        er = 8 - position // 8
+        ef = position % 8
+        enemies = []
+        if color == "White":
+            for location in self.board:
+                if location != 0 and location.color == "Black":
+                    enemies.append(location)
+            for enemy in enemies:
+                sr = 8 - enemy.position // 8
+                sf = enemy.position % 8
+                if enemy.moves(sr, sf, er, ef):
+                    return True
+        elif color == "Black":
+            for location in self.board:
+                if location != 0 and location.color == "White":
+                    enemies.append(location)
+            for enemy in enemies:
+                sr = 8 - enemy.position // 8
+                sf = enemy.position % 8
+                if enemy.moves(sr, sf, er, ef):
+                    return True
+        return False
 
     def evaluation(self):
         pass
@@ -143,11 +174,11 @@ class Piece():
     def king_in_check(self):
         if self.color == "White":
             for location in self.board:
-                if location != 0 and str(location) == "K" and location.in_check():
+                if location != 0 and str(location) == "K" and self.board.in_check(location.position, "White"):
                     return True
         else:
             for location in self.board:
-                if location != 0 and str(location) == "k" and location.in_check():
+                if location != 0 and str(location) == "k" and self.board.in_check(location.position, "Black"):
                     return True
         return False
 
@@ -155,6 +186,14 @@ class Piece():
 
 class King(Piece):
         
+    def __init__(self, color, board, pos):
+        self.color = color
+        self.directions = [(-8, "N"), (1, "E"), (8, "S"), (-1, "W"), (-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW")]
+        self.board = board
+        # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
+        self.position = pos
+        self.notMoved = True
+
     def __str__(self):
         if self.color == "White":
             return "K"
@@ -165,39 +204,42 @@ class King(Piece):
         goal = (8 - er) * 8 + ef
         valid = []
 
+        if self.notMoved and str(self.board[self.position + 3]).lower() == "r" and self.board[self.position + 3].castleable: # East side has an unmoved rook
+            doable = True
+            # check if those squares are empty
+            if self.board[self.position + 1] == 0 and self.board[self.position + 2] == 0:
+                # check if those squares are in check
+                for location in self.board[self.position:self.position + 2]:
+                    if self.board.in_check(location, self.board[location.position].color):
+                        doable = False
+                if doable:
+                    self.directions.append((2, "E"))
+        if self.notMoved and str(self.board[self.position - 4]).lower() == "r" and self.board[self.position - 4].castleable: # West side has an unmoved rook    
+            doable = True
+            # check if those squares are empty
+            if self.board[self.position - 1] == 0 and self.board[self.position - 2] == 0 and self.board[self.position - 3] == 0:
+            # check if those squares are in check
+                for location in self.board[self.position - 3:self.position + 1]:
+                    if self.board.in_check(location, self.board[location.position].color):
+                        doable = False
+                if doable:
+                    self.directions.append((-2, "W"))
+
          # N E S W NE SE SW NW
         for dir in self.directions:
             possibility = position + dir[0]
             if 0 <= possibility < 64 and self.orientation(sr, sf, 8 - possibility // 8, possibility % 8) == dir[1]:
                 valid.append(possibility)
-            
+        
         if goal in valid:
+            self.reset_directions() # ADD IF STATEMENT TO MOVE ROOKS
             return True
         return False
     
-    def in_check(self):
-        er = 8 - self.position // 8
-        ef = self.position % 8
-        enemies = []
-        if self.color == "White":
-            for location in self.board:
-                if location != 0 and location.color == "Black":
-                    enemies.append(location)
-            for enemy in enemies:
-                sr = 8 - enemy.position // 8
-                sf = enemy.position % 8
-                if enemy.moves(sr, sf, er, ef):
-                    return True
-        else:
-            for location in self.board:
-                if location != 0 and location.color == "White":
-                    enemies.append(location)
-            for enemy in enemies:
-                sr = 8 - enemy.position // 8
-                sf = enemy.position % 8
-                if enemy.moves(sr, sf, er, ef):
-                    return True
-        return False
+    def reset_directions(self):
+        self.directions = [(-8, "N"), (1, "E"), (8, "S"), (-1, "W"), (-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW")]
+        self.notMoved = False
+    
 
 class Queen(Piece):
 
@@ -284,6 +326,14 @@ class Knight(Piece):
 
 class Rook(Piece):
 
+    def __init__(self, color, board, pos):
+        self.color = color
+        self.cardinalDirections = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"))
+        self.board = board
+        # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
+        self.position = pos
+        self.castleable = True
+
     def __str__(self):
         if self.color == "White":
             return "R"
@@ -308,6 +358,7 @@ class Rook(Piece):
                     break # taking is as far as you can go, and break
 
         if goal in valid:
+            self.castleable = False
             return True
         return False
 
@@ -359,10 +410,9 @@ class Pawn(Piece):
                     continue # if the endpoint is of same color, break
                 else:
                     valid.append(possibility) # adds possibility if empty 
-        
-        self.reset_directions()
 
         if goal in valid:
+            self.reset_directions()
             return True
         return False
                 
