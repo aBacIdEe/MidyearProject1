@@ -131,7 +131,7 @@ class Board():
     def evaluation(self):
         pass
 
-class Piece():
+class Piece(Board):
 
     def __init__(self, color, board, pos):
         self.color = color
@@ -174,11 +174,11 @@ class Piece():
     def king_in_check(self):
         if self.color == "White":
             for location in self.board:
-                if location != 0 and str(location) == "K" and self.board.in_check(location.position, "White"):
+                if location != 0 and str(location) == "K" and self.in_check(location.position, "White"):
                     return True
         else:
             for location in self.board:
-                if location != 0 and str(location) == "k" and self.board.in_check(location.position, "Black"):
+                if location != 0 and str(location) == "k" and self.in_check(location.position, "Black"):
                     return True
         return False
 
@@ -437,4 +437,4 @@ def main():
     chess.move_piece("d7", "d6")
     print(str(chess))
 
-# main()
+main()
