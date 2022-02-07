@@ -423,7 +423,7 @@ class Pawn(Piece):
         else:
             self.directions = [(8, "S", True), (16, "S", False), (9, "SE", False), (7, "SW", False), (16, "S", False)]
 
-
+ 
 def main():
     chess = Board()
     chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPP1PPPP/RNBQKBNR")
