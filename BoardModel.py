@@ -88,16 +88,19 @@ class Board():
                         elif startIndex - endIndex == 2: # long castle
                             self.board[startIndex - 1] = self.board[startIndex - 4]
                             self.board[startIndex - 4] = 0
-                        if 0 <= piece.position < 8:
-                            if pawnPromote == "Q": self.board[endIndex] = Queen(piece.color, self.board, endIndex)
-                            elif pawnPromote == "B": self.board[endIndex] = Bishop(piece.color, self.board, endIndex)
-                            elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
-                            elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
-                        elif 56 <= piece.position < 64:
-                            if pawnPromote == "Q": self.board[endIndex] = Queen(piece.color, self.board, endIndex)
-                            elif pawnPromote == "B": self.board[endIndex] = Bishop(piece.color, self.board, endIndex)
-                            elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
-                            elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
+                        if str(piece).lower() == "p":
+                            if 0 <= piece.position < 8:
+                                if pawnPromote == "Q": self.board[endIndex] = Queen(piece.color, self.board, endIndex)
+                                elif pawnPromote == "B": self.board[endIndex] = Bishop(piece.color, self.board, endIndex)
+                                elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
+                                elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
+                            elif 56 <= piece.position < 64:
+                                if pawnPromote == "Q": self.board[endIndex] = Queen(piece.color, self.board, endIndex)
+                                elif pawnPromote == "B": self.board[endIndex] = Bishop(piece.color, self.board, endIndex)
+                                elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
+                                elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
+                            else:
+                                self.move_confirmation(False)
                     piece.position = self.board.index(piece)
                     self.move_confirmation(True)
             else:
