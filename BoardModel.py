@@ -60,6 +60,7 @@ class Board():
         Sfile = self.rank_to_int(start[0]) # a = 1, h = 8
         Erank = int(end[1])
         Efile = self.rank_to_int(end[0])
+        pawnPromote = end[2]
 
         startIndex = Sfile + 8 * (8 - Srank)
         endIndex = Efile + 8 * (8 - Erank)
@@ -87,6 +88,16 @@ class Board():
                         elif startIndex - endIndex == 2: # long castle
                             self.board[startIndex - 1] = self.board[startIndex - 4]
                             self.board[startIndex - 4] = 0
+                        if 0 <= piece.position < 8:
+                            if pawnPromote == "Q": self.board[endIndex] = Queen(piece.color, self.board, endIndex)
+                            elif pawnPromote == "B": self.board[endIndex] = Bishop(piece.color, self.board, endIndex)
+                            elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
+                            elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
+                        elif 56 <= piece.position < 64:
+                            if pawnPromote == "Q": self.board[endIndex] = Queen(piece.color, self.board, endIndex)
+                            elif pawnPromote == "B": self.board[endIndex] = Bishop(piece.color, self.board, endIndex)
+                            elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
+                            elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
                     piece.position = self.board.index(piece)
                     self.move_confirmation(True)
             else:
@@ -444,4 +455,4 @@ def main():
     chess.move_piece("d7", "d6")
     print(str(chess))
 
-# main()
+main()
