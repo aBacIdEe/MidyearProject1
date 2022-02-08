@@ -5,10 +5,11 @@ class Timer():
         #time is given as number of seconds
         self.time = time #should be less than a day
         self.increment = increment
+        self.resume_timer()
 
     def __str__(self):
-        minutes = 0
-        hours = 0
+        minutes = -1
+        hours = -1
         for min in range(0, self.time, 60):
             minutes += 1
         for hour in range(0, minutes, 60):
@@ -31,9 +32,24 @@ class Timer():
         if self.time > 0:
             while truefalse == True:
                 time.sleep(1)
-                self.show_time -= 1
+                self.time -= 1
         #what do I do when time runs out?
 
     def add_increment(self):
         self.time += self.increment
         #this should be done when a player makes a move
+
+obj = Timer(1000,10)
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
+obj.resume_timer()
+print(str(obj))
