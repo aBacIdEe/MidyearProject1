@@ -209,7 +209,7 @@ class King(Piece):
         goal = (8 - er) * 8 + ef
         valid = []
 
-        if self.notMoved and str(self.board[self.position + 3]).lower() == "r" and self.board[self.position + 3].castleable: # East side has an unmoved rook
+        if self.notMoved and str(self.board[self.position + 3]).lower() == "r" and self.board[self.position + 3].color == self.color and self.board[self.position + 3].castleable: # East side has an unmoved rook
             doable = True
             # check if those squares are empty
             if self.board[self.position + 1] == 0 and self.board[self.position + 2] == 0:
@@ -219,7 +219,7 @@ class King(Piece):
                         doable = False
                 if doable:
                     self.directions.append((2, "E"))
-        if self.notMoved and str(self.board[self.position - 4]).lower() == "r" and self.board[self.position - 4].castleable: # West side has an unmoved rook    
+        if self.notMoved and str(self.board[self.position - 4]).lower() == "r" and self.board[self.position - 4].color == self.color and self.board[self.position - 4].castleable: # West side has an unmoved rook    
             doable = True
             # check if those squares are empty
             if self.board[self.position - 1] == 0 and self.board[self.position - 2] == 0 and self.board[self.position - 3] == 0:
