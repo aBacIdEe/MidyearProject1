@@ -54,8 +54,8 @@ class Board():
                 i += 1
 
     def move_piece(self, start, end):
-        start = list(start)
-        end = list(end)
+        start = list(start) + [""]
+        end = list(end) + [""]
         Srank = int(start[1])
         Sfile = self.rank_to_int(start[0]) # a = 1, h = 8
         Erank = int(end[1])
@@ -455,4 +455,4 @@ def main():
     chess.move_piece("d7", "d6")
     print(str(chess))
 
-main()
+# main()
