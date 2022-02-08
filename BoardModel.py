@@ -118,6 +118,15 @@ class Board():
         else:
             print("invalid move")
 
+        if self.end():
+            print("Checkmate")
+
+    def end(self):
+        return False
+        for location in self.board:
+            if location != 0 and str(location) == "K" and self.in_check(location.position, "White"):
+                return True
+
     def in_check(self, position, color):
         er = 8 - position // 8
         ef = position % 8
