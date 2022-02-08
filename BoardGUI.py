@@ -1,4 +1,6 @@
 from tkinter import *
+
+from numpy import column_stack
 import BoardModel as bm
 
 GRIDLIST = ['a8 b8 c8 d8 e8 f8 g8 h8'.split(),
@@ -9,7 +11,8 @@ GRIDLIST = ['a8 b8 c8 d8 e8 f8 g8 h8'.split(),
             'a3 b3 c3 d3 e3 f3 g3 h3'.split(),
             'a2 b2 c2 d2 e2 f2 g2 h2'.split(),
             'a1 b1 c1 d1 e1 f1 g1 h1'.split()]
-        
+
+# Setting up the board        
 chess = bm.Board()
 chess.load_board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')
 class Application(Frame):
@@ -18,11 +21,23 @@ class Application(Frame):
         self.grid()
         self.create_widgets()
 
-    def printPos(self, r, c):
+    def getPos(self, r, c):
         '''Gets the grid position of the position using row and column'''
-        print(GRIDLIST[r-1][c-1])
+        pos = (GRIDLIST[r-1][c-1])
+        print(self.getEnd(pos))
+
+    def getEnd(self, bttn):
+        if len(self.l)%2 == 1:
+            # this means the bttn pressed is the second one
+            end = self.getPos(bttn)
+            # l[-1] is the last button that was clicked
+            bm.move_piece(self.l[-1],end)
+            # this means it's the first button pressed
+        self.l.append(bttn)
+        return(self.l)
 
     def create_widgets(self):
+        self.buttonPressed = False
         x = 0
         self.rowLabels = list('abcdefgh')
         for row in range(1,9):
@@ -33,16 +48,17 @@ class Application(Frame):
                 if row%2==0:
                     if column%2==0:
                         # self.printPos(row,column)
-                        Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.printPos(r,c))(row,column) ).grid(row=row,column=column)
+                        Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)).grid(row=row,column=column)
                     else:
                         # self.printPos(row,column)
-                        Button(self, width=6, height=3, text=t, bg='tan', command=(lambda r,c: lambda:self.printPos(r,c))(row,column)).grid(row=row,column=column)
+                        # (lambda r,c: lambda:self.printPos(r,c))(row,column)
+                        Button(self, width=6, height=3, text=t, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)).grid(row=row,column=column)
                 else:
                     if column%2==1:
-                        Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.printPos(r,c))(row,column)).grid(row=row,column=column)
+                        Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)).grid(row=row,column=column)
                     else:
                         # self.printPos(row,column)
-                        Button(self, width=6, height=3, text=t,bg='tan', command=(lambda r,c: lambda:self.printPos(r,c))(row,column)).grid(row=row,column=column)
+                        Button(self, width=6, height=3, text=t, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)).grid(row=row,column=column)
                 x += 1
             Label(self, text=row).grid(row=9-row,column=0)
         for i in range(len(self.rowLabels)):
