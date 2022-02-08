@@ -162,6 +162,11 @@ class Piece(Board):
             return True
         return False
 
+    def is_double_pawn(self, target):
+        if 0 <= target < 64 and str(self.board[target]).lower() == "p" and self.board[target].moveCount == 1:
+            return True
+        return False
+
     def is_same_color(self, color, target):
         target = self.board[target]
         if target.color == color:
@@ -204,7 +209,7 @@ class King(Piece):
         goal = (8 - er) * 8 + ef
         valid = []
 
-        if self.notMoved and str(self.board[self.position + 3]).lower() == "r" and self.board[self.position + 3].castleable: # East side has an unmoved rook
+        if self.notMoved and str(self.board[self.position + 3]).lower() == "r" and self.board[self.position + 3].color == self.color and self.board[self.position + 3].castleable: # East side has an unmoved rook
             doable = True
             # check if those squares are empty
             if self.board[self.position + 1] == 0 and self.board[self.position + 2] == 0:
@@ -214,7 +219,7 @@ class King(Piece):
                         doable = False
                 if doable:
                     self.directions.append((2, "E"))
-        if self.notMoved and str(self.board[self.position - 4]).lower() == "r" and self.board[self.position - 4].castleable: # West side has an unmoved rook    
+        if self.notMoved and str(self.board[self.position - 4]).lower() == "r" and self.board[self.position - 4].color == self.color and self.board[self.position - 4].castleable: # West side has an unmoved rook    
             doable = True
             # check if those squares are empty
             if self.board[self.position - 1] == 0 and self.board[self.position - 2] == 0 and self.board[self.position - 3] == 0:
@@ -374,6 +379,7 @@ class Pawn(Piece):
 
         self.board = board
         self.position = pos
+        self.moveCount = 0
 
     def __str__(self):
         if self.color == "White":
@@ -389,17 +395,17 @@ class Pawn(Piece):
             if self.is_piece(position - 8):
                 self.directions[0] = (-8, "N", False)
                 self.directions[4] = (-16, "N", False)
-            if self.is_piece(position - 7):
+            if self.is_piece(position - 7) or self.is_double_pawn(position + 1):
                 self.directions[2] = (-7, "NE", True)
-            if self.is_piece(position -9):
+            if self.is_piece(position -9) or self.is_double_pawn(position - 1):
                 self.directions[3] = (-9, "NW", True)
         elif self.color == "Black":
             if self.is_piece(position + 8):
                 self.directions[0] = (8, "S", False)
                 self.directions[4] = (16, "S", False)
-            if self.is_piece(position + 9):
+            if self.is_piece(position + 9) or self.is_double_pawn(position + 1):
                 self.directions[2] = (9, "SE", True)
-            if self.is_piece(position + 7):
+            if self.is_piece(position + 7) or self.is_double_pawn(position - 1):
                 self.directions[3] = (7, "SW", True)
 
 
@@ -413,6 +419,7 @@ class Pawn(Piece):
 
         if goal in valid:
             self.reset_directions()
+            self.moveCount += 1
             return True
         return False
                 
