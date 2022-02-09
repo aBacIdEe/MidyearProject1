@@ -239,19 +239,19 @@ class King(Piece):
             # check if those squares are empty
             if self.board[self.position + 1] == 0 and self.board[self.position + 2] == 0:
                 # check if those squares are in check
-                for location in self.board[self.position:self.position + 2]:
-                    if self.board.in_check(location, self.board[location.position].color):
-                        doable = False
+                # It's now hardcoded, but significantly cleaner
+                if self.in_check(self.position + 1, self.board[self.position].color): doable = False
+                if self.in_check(self.position + 2, self.board[self.position].color): doable = False
                 if doable:
                     self.directions.append((2, "E"))
         if self.notMoved and str(self.board[self.position - 4]).lower() == "r" and self.board[self.position - 4].color == self.color and self.board[self.position - 4].castleable: # West side has an unmoved rook    
             doable = True
             # check if those squares are empty
             if self.board[self.position - 1] == 0 and self.board[self.position - 2] == 0 and self.board[self.position - 3] == 0:
-            # check if those squares are in check
-                for location in self.board[self.position - 3:self.position + 1]:
-                    if self.board.in_check(location, self.board[location.position].color):
-                        doable = False
+                # check if those squares are in check
+                if self.in_check(self.position - 1, self.board[self.position].color): doable = False        
+                if self.in_check(self.position - 2, self.board[self.position].color): doable = False
+                if self.in_check(self.position - 3, self.board[self.position].color): doable = False
                 if doable:
                     self.directions.append((-2, "W"))
 
@@ -398,9 +398,9 @@ class Pawn(Piece):
         self.color = color
         self.passant = False
         if self.color == "White": # move up on board 
-            self.directions = [(-8, "N", True), (-16, "N", True), (-7, "NE", False), (-9, "NW", False), (-16, "N", True)] # note: make third state to decide validitiy
+            self.directions = [(-8, "N", True), (-7, "NE", False), (-9, "NW", False), (-16, "N", True)] # note: make third state to decide validitiy
         else: # move down on board
-            self.directions = [(8, "S", True), (16, "S", True), (9, "SE", False), (7, "SW", False), (16, "S", True)]
+            self.directions = [(8, "S", True), (9, "SE", False), (7, "SW", False), (16, "S", True)]
 
         self.board = board
         self.position = pos
@@ -419,19 +419,19 @@ class Pawn(Piece):
         if self.color == "White": # ADDED CHECK IF PIECE UPAHEAD FOR DOUBLE JUMP
             if self.is_piece(position - 8):
                 self.directions[0] = (-8, "N", False)
-                self.directions[4] = (-16, "N", False)
+                self.directions[3] = (-16, "N", False)
             if self.is_piece(position - 7) or self.is_double_pawn(position + 1):
-                self.directions[2] = (-7, "NE", True)
+                self.directions[1] = (-7, "NE", True)
             if self.is_piece(position -9) or self.is_double_pawn(position - 1):
-                self.directions[3] = (-9, "NW", True)
+                self.directions[2] = (-9, "NW", True)
         elif self.color == "Black":
             if self.is_piece(position + 8):
                 self.directions[0] = (8, "S", False)
-                self.directions[4] = (16, "S", False)
+                self.directions[3] = (16, "S", False)
             if self.is_piece(position + 9) or self.is_double_pawn(position + 1):
-                self.directions[2] = (9, "SE", True)
+                self.directions[1] = (9, "SE", True)
             if self.is_piece(position + 7) or self.is_double_pawn(position - 1):
-                self.directions[3] = (7, "SW", True)
+                self.directions[2] = (7, "SW", True)
 
 
         for dir in self.directions:
@@ -460,13 +460,19 @@ def main():
     chess = Board()
     chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
     print(str(chess))
-    chess.move_piece("h2", "h3")
+    chess.move_piece("e2", "e4")
     print(str(chess))
-    chess.move_piece("e8", "d7")
+    chess.move_piece("e7", "e5")
     print(str(chess))
-    chess.move_piece("c1", "f4")
+    chess.move_piece("f1", "d3")
     print(str(chess))
-    chess.move_piece("d7", "d6")
+    chess.move_piece("b8", "c6")
+    print(str(chess))
+    chess.move_piece("g1", "f3")
+    print(str(chess))
+    chess.move_piece("b7", "b6")
+    print(str(chess))
+    chess.move_piece("e1", "g1")
     print(str(chess))
 
 # main()
