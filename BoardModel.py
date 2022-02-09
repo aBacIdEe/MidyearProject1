@@ -88,19 +88,27 @@ class Board():
                         elif startIndex - endIndex == 2: # long castle
                             self.board[startIndex - 1] = self.board[startIndex - 4]
                             self.board[startIndex - 4] = 0
-                        if str(piece).lower() == "p":
-                            if 0 <= piece.position < 8:
-                                if pawnPromote == "Q": self.board[endIndex] = Queen(piece.color, self.board, endIndex)
-                                elif pawnPromote == "B": self.board[endIndex] = Bishop(piece.color, self.board, endIndex)
-                                elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
-                                elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
-                            elif 56 <= piece.position < 64:
-                                if pawnPromote == "Q": self.board[endIndex] = Queen(piece.color, self.board, endIndex)
-                                elif pawnPromote == "B": self.board[endIndex] = Bishop(piece.color, self.board, endIndex)
-                                elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
-                                elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
+                    if str(piece).lower() == "p":
+                        if piece.passanted:
+                            if piece.color == "White":
+                                self.board[endIndex + 8] = 0
+                                piece.passanted = False
                             else:
-                                self.move_confirmation(False)
+                                self.board[endIndex - 8] = 0
+                                piece.passanted = False
+                        if 0 <= piece.position < 8:
+                            if pawnPromote == "Q": self.board[endIndex] = Queen(piece.color, self.board, endIndex)
+                            elif pawnPromote == "B": self.board[endIndex] = Bishop(piece.color, self.board, endIndex)
+                            elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
+                            elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
+                            else: self.move_confirmation(False)
+                        elif 56 <= piece.position < 64:
+                            if pawnPromote == "Q": self.board[endIndex] = Queen(piece.color, self.board, endIndex)
+                            elif pawnPromote == "B": self.board[endIndex] = Bishop(piece.color, self.board, endIndex)
+                            elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
+                            elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
+                            else: self.move_confirmation(False)
+                                
                     piece.position = self.board.index(piece)
                     self.move_confirmation(True)
             else:
@@ -409,6 +417,8 @@ class Pawn(Piece):
         self.position = pos
         self.moveCount = 0
 
+        self.passanted = False
+
     def __str__(self):
         if self.color == "White":
             return "P"
@@ -423,18 +433,31 @@ class Pawn(Piece):
             if self.is_piece(position - 8):
                 self.directions[0] = (-8, "N", False)
                 self.directions[3] = (-16, "N", False)
-            if self.is_piece(position - 7) or self.is_double_pawn(position + 1):
+
+            if self.is_piece(position - 7):
                 self.directions[1] = (-7, "NE", True)
-            if self.is_piece(position -9) or self.is_double_pawn(position - 1):
+            if self.is_double_pawn(position + 1):
+                self.directions[1] = (-7, "NE", True, True)
+            
+            if self.is_piece(position -9):
                 self.directions[2] = (-9, "NW", True)
+            if self.is_double_pawn(position - 1):
+                self.directions[2] = (-9, "NW", True, True)
+        
         elif self.color == "Black":
             if self.is_piece(position + 8):
                 self.directions[0] = (8, "S", False)
                 self.directions[3] = (16, "S", False)
-            if self.is_piece(position + 9) or self.is_double_pawn(position + 1):
+            
+            if self.is_piece(position + 9):
                 self.directions[1] = (9, "SE", True)
-            if self.is_piece(position + 7) or self.is_double_pawn(position - 1):
+            if self.is_double_pawn(position + 1):
+                self.directions[1] = (9, "SE", True, True)
+    
+            if self.is_piece(position + 7):
                 self.directions[2] = (7, "SW", True)
+            if self.is_double_pawn(position - 1):
+                self.directions[2] = (7, "SW", True, True)
 
 
         for dir in self.directions:
@@ -443,20 +466,26 @@ class Pawn(Piece):
                 if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
                     continue # if the endpoint is of same color, break
                 else:
-                    valid.append(possibility) # adds possibility if empty 
+                    if len(dir) == 4:
+                        valid.append((possibility, True))
+                    else:
+                        valid.append((possibility, False)) # adds possibility if empty 
 
-        if goal in valid:
-            self.reset_directions()
-            self.moveCount += 1
-            return True
+        for possible in valid:
+            if goal in possible:
+                if possible[1]:
+                    self.passanted = True
+                self.reset_directions()
+                self.moveCount += 1
+                return True
         return False
                 
 
     def reset_directions(self):
         if self.color == "White":
-            self.directions = [(-8, "N", True), (-16, "N", False), (-7, "NE", False), (-9, "NW", False), (-16, "N", False)]
+            self.directions = [(-8, "N", True), (-7, "NE", False), (-9, "NW", False), (-16, "N", False)]
         else:
-            self.directions = [(8, "S", True), (16, "S", False), (9, "SE", False), (7, "SW", False), (16, "S", False)]
+            self.directions = [(8, "S", True), (9, "SE", False), (7, "SW", False), (16, "S", False)]
 
  
 def main():
@@ -465,17 +494,15 @@ def main():
     print(str(chess))
     chess.move_piece("e2", "e4")
     print(str(chess))
-    chess.move_piece("e7", "e5")
+    chess.move_piece("a7", "a5")
     print(str(chess))
-    chess.move_piece("f1", "d3")
+    chess.move_piece("e4", "e5")
     print(str(chess))
-    chess.move_piece("b8", "c6")
+    chess.move_piece("f7", "f5")
     print(str(chess))
-    chess.move_piece("g1", "f3")
+    chess.move_piece("e5", "f6")
     print(str(chess))
     chess.move_piece("b7", "b6")
     print(str(chess))
-    chess.move_piece("e1", "g1")
-    print(str(chess))
 
-# main()
+main()
