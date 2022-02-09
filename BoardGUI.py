@@ -11,6 +11,8 @@ GRIDLIST = ['a8 b8 c8 d8 e8 f8 g8 h8'.split(),
             'a2 b2 c2 d2 e2 f2 g2 h2'.split(),
             'a1 b1 c1 d1 e1 f1 g1 h1'.split()]
 
+BUTTONS = []
+
 # Setting up the board        
 chess = bm.Board()
 chess.load_board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')
