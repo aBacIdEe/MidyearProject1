@@ -18,6 +18,7 @@ class Application(Frame):
     def __init__(self, master):
         super().__init__(master)
         self.grid()
+        self.buttonList = []
         self.create_widgets()
 
     def getPos(self, r, c):
@@ -31,6 +32,11 @@ class Application(Frame):
             # this is the second button being pressed
             # getting the last move
             chess.move_piece(self.moves[-1], pos)
+            for i in range(len(self.buttonList)):
+                if str(chess.board[i]) != "0":
+                    self.buttonList[i]["text"] = str(chess.board[i])
+                else:
+                    self.buttonList[i]["text"] = ""
 
     def isButtonPressed(self):
         if self.buttonPressed:
@@ -55,17 +61,21 @@ class Application(Frame):
                 if row%2==0:
                     if column%2==0:
                         # self.printPos(row,column)
-                        Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)).grid(row=row,column=column)
+                        self.buttonList.append(Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList[-1].grid(row=row,column=column)
                     else:
                         # self.printPos(row,column)
                         # (lambda r,c: lambda:self.printPos(r,c))(row,column)
-                        Button(self, width=6, height=3, text=t, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)).grid(row=row,column=column)
+                        self.buttonList.append(Button(self, width=6, height=3, text=t, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList[-1].grid(row=row,column=column)
                 else:
                     if column%2==1:
-                        Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)).grid(row=row,column=column)
+                        self.buttonList.append(Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList[-1].grid(row=row,column=column)
                     else:
                         # self.printPos(row,column)
-                        Button(self, width=6, height=3, text=t, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)).grid(row=row,column=column)
+                        self.buttonList.append(Button(self, width=6, height=3, text=t, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList[-1].grid(row=row,column=column)
                 x += 1
             Label(self, text=row).grid(row=9-row,column=0)
         for i in range(len(self.rowLabels)):
