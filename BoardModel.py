@@ -115,8 +115,10 @@ class Board():
                 self.turn = "Black"
             else:
                 self.turn = "White"
-        else:
+            return True
+        elif not valid:
             print("invalid move")
+            return False
 
         if self.end():
             print("Checkmate")
@@ -456,9 +458,9 @@ class Pawn(Piece):
  
 def main():
     chess = Board()
-    chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPP1PPPP/RNBQKBNR")
+    chess.load_board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
     print(str(chess))
-    chess.move_piece("d1", "d7")
+    chess.move_piece("h2", "h3")
     print(str(chess))
     chess.move_piece("e8", "d7")
     print(str(chess))
