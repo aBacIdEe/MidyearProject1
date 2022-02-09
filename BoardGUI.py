@@ -24,7 +24,6 @@ class Application(Frame):
         '''Gets the grid position of the position using row and column'''
         pos = (GRIDLIST[r-1][c-1])
         pressed = self.isButtonPressed()
-        print(pressed)
         if not pressed:
             # this is the first button
             self.moves.append(pos)
@@ -32,7 +31,6 @@ class Application(Frame):
             # this is the second button being pressed
             # getting the last move
             chess.move_piece(self.moves[-1], pos)
-        print(self.moves)
 
     def isButtonPressed(self):
         if self.buttonPressed:
