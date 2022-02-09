@@ -259,7 +259,10 @@ class King(Piece):
         for dir in self.directions:
             possibility = position + dir[0]
             if 0 <= possibility < 64 and self.orientation(sr, sf, 8 - possibility // 8, possibility % 8) == dir[1]:
-                valid.append(possibility)
+                if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
+                    continue
+                else:
+                    valid.append(possibility)
         
         if goal in valid:
             self.reset_directions() # ADD IF STATEMENT TO MOVE ROOKS
