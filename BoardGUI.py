@@ -1,6 +1,5 @@
 from tkinter import *
 
-from numpy import column_stack
 import BoardModel as bm
 
 GRIDLIST = ['a8 b8 c8 d8 e8 f8 g8 h8'.split(),
@@ -24,20 +23,30 @@ class Application(Frame):
     def getPos(self, r, c):
         '''Gets the grid position of the position using row and column'''
         pos = (GRIDLIST[r-1][c-1])
-        print(self.getEnd(pos))
+        pressed = self.isButtonPressed()
+        print(pressed)
+        if not pressed:
+            # this is the first button
+            self.moves.append(pos)
+        else:
+            # this is the second button being pressed
+            # getting the last move
+            chess.move_piece(self.moves[-1], pos)
+        print(self.moves)
 
-    def getEnd(self, bttn):
-        if len(self.l)%2 == 1:
-            # this means the bttn pressed is the second one
-            end = self.getPos(bttn)
-            # l[-1] is the last button that was clicked
-            bm.move_piece(self.l[-1],end)
-            # this means it's the first button pressed
-        self.l.append(bttn)
-        return(self.l)
+    def isButtonPressed(self):
+        if self.buttonPressed:
+            # the button that was just pressed is the second button
+            # perform tasks
+            self.buttonPressed = False
+            return True
+        else:
+            self.buttonPressed = True
+            return False
 
     def create_widgets(self):
         self.buttonPressed = False
+        self.moves = []
         x = 0
         self.rowLabels = list('abcdefgh')
         for row in range(1,9):
