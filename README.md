@@ -1,3 +1,3 @@
-The Model is half way done.
-The Controller and GUI haven't started yet.
-
+The Model is mostly done.
+The GUI is mostly done.
+The Controller is half way done.
