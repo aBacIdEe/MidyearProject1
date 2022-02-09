@@ -119,6 +119,9 @@ class Board():
     def move_confirmation(self, valid):
         if valid:
             print("move made")
+            for i in range(64):
+                if str(self.board[i]).lower() == "p" and self.board[i].hasMoved:
+                    self.board[i].timeSinceMove += 1
             if self.turn == "White":
                 self.turn = "Black"
             else:
@@ -196,7 +199,7 @@ class Piece(Board):
         return False
 
     def is_double_pawn(self, target):
-        if 0 <= target < 64 and str(self.board[target]).lower() == "p" and self.board[target].moveCount == 1:
+        if 0 <= target < 64 and str(self.board[target]).lower() == "p" and self.board[target].timeSinceMove == 1:
             return True
         return False
 
@@ -415,9 +418,10 @@ class Pawn(Piece):
 
         self.board = board
         self.position = pos
-        self.moveCount = 0
 
         self.passanted = False
+        self.hasMoved = False
+        self.timeSinceMove = 0
 
     def __str__(self):
         if self.color == "White":
@@ -476,7 +480,7 @@ class Pawn(Piece):
                 if possible[1]:
                     self.passanted = True
                 self.reset_directions()
-                self.moveCount += 1
+                self.hasMoved = True
                 return True
         return False
                 
