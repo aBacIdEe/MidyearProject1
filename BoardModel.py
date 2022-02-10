@@ -162,6 +162,15 @@ class Board():
                 sf = enemy.position % 8
                 if enemy.moves(sr, sf, er, ef):
                     return True
+        else:
+            for location in self.board:
+                if location != 0 and location.color != color:
+                    enemies.append(location)
+            for enemy in enemies:
+                sr = 8 - enemy.position // 8
+                sf = enemy.position % 8
+                if enemy.moves(sr, sf, er, ef):
+                    return True
         return False
 
     def evaluation(self):
