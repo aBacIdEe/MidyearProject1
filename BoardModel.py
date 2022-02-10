@@ -136,9 +136,22 @@ class Board():
 
     def end(self):
         return False
-        for location in self.board:
-            if location != 0 and str(location) == "K" and self.in_check(location.position, "White"):
-                return True
+        
+        location = []
+        if self.turn == "White":
+            for aPiece in self.board:
+                if aPiece != 0 and aPiece.color == "White":
+                    for move in range(64):
+                        if aPiece.move(move):
+                            return False
+                    return True
+        else:
+            for aPiece in self.board:
+                if aPiece != 0 and aPiece.color == "Black":
+                    for move in range(64): # for all moves a piece this turn can make
+                        if aPiece.move(move): # if there's a possible move, return not end
+                            return False
+                    return True # other wise return True
 
     def in_check(self, position, color):
         er = 8 - position // 8
