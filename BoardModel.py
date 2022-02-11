@@ -531,4 +531,4 @@ def main():
     print(str(chess))
 
 
-main()
+# main()
