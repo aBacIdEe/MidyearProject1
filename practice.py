@@ -1,4 +1,6 @@
+from cProfile import label
 from tkinter import *
+from PIL import Image, ImageTk
 
 class Application(Frame):
     def __init__(self, master):
@@ -6,17 +8,10 @@ class Application(Frame):
         self.grid()
         self.create_widgets()
 
-    def hover(self, e):
-        self.bttn['bg'] = 'red'
-
-    def leave(self, e):
-        self.bttn['bg'] = 'blue'
-
     def create_widgets(self):
-        self.bttn = Button(self, text='hi', bg='blue')
-        self.bttn.bind('<Enter>', self.hover)
-        self.bttn.bind('<Leave>', self.leave)
-        self.bttn.grid()
+        bttn = PhotoImage(file='images/blackbishoppiece.png')
+        b = Button(self, image=bttn)
+        b.grid(row=0,column=0)
 
 root = Tk()
 app = Application(root)

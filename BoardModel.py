@@ -509,4 +509,4 @@ def main():
     chess.move_piece("b7", "b6")
     print(str(chess))
 
-main()
+# main()
