@@ -2,10 +2,11 @@
 
 class Board():
 
-    board = [0 for _ in range(64)]
+    
 
     def __init__(self): # size is built in instead of parameterized
         self.turn = "White"
+        self.board = [0 for _ in range(64)]
 
     def __str__(self):
         result = ""
@@ -200,7 +201,7 @@ class Piece(Board):
         self.knightDirections = ((-15, "NE"), (-6, "NE"), (10, "SE"), (17, "SE"), (6, "SW"), (15, "SW"), (-10, "NW"), (-17, "NW")) # knight moves
         # slide function not in here to repeatedly use one "king move" until hit piece
         # for pawn moves it's a procedure
-        # self.board = board
+        self.board = board
         # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
         self.position = pos
 
@@ -253,7 +254,7 @@ class King(Piece):
     def __init__(self, color, board, pos):
         self.color = color
         self.directions = [(-8, "N"), (1, "E"), (8, "S"), (-1, "W"), (-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW")]
-        # self.board = board
+        self.board = board
         # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
         self.position = pos
         self.notMoved = True
@@ -396,7 +397,7 @@ class Rook(Piece):
     def __init__(self, color, board, pos):
         self.color = color
         self.cardinalDirections = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"))
-        # self.board = board
+        self.board = board
         # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
         self.position = pos
         self.castleable = True
@@ -439,7 +440,7 @@ class Pawn(Piece):
         else: # move down on board
             self.directions = [(8, "S", True), (9, "SE", False), (7, "SW", False), (16, "S", True)]
 
-        # self.board = board
+        self.board = board
         self.position = pos
 
         self.passanted = False
@@ -463,12 +464,12 @@ class Pawn(Piece):
 
             if self.is_piece(position - 7):
                 self.directions[1] = (-7, "NE", True)
-            if self.is_double_pawn(position + 1):
+            if self.board[position + 1] != 0 and self.board[position + 1].color == "Black" and self.is_double_pawn(position + 1):
                 self.directions[1] = (-7, "NE", True, True)
             
             if self.is_piece(position -9):
                 self.directions[2] = (-9, "NW", True)
-            if self.is_double_pawn(position - 1):
+            if self.board[position - 1] != 0 and self.board[position - 1].color == "Black" and self.is_double_pawn(position - 1):
                 self.directions[2] = (-9, "NW", True, True)
         
         elif self.color == "Black":
@@ -478,12 +479,12 @@ class Pawn(Piece):
             
             if self.is_piece(position + 9):
                 self.directions[1] = (9, "SE", True)
-            if self.is_double_pawn(position + 1):
+            if self.board[position + 1] != 0 and self.board[position + 1].color == "White" and self.is_double_pawn(position + 1):
                 self.directions[1] = (9, "SE", True, True)
     
             if self.is_piece(position + 7):
                 self.directions[2] = (7, "SW", True)
-            if self.is_double_pawn(position - 1):
+            if self.board[position - 1] != 0 and self.board[position - 1].color == "White" and self.is_double_pawn(position - 1):
                 self.directions[2] = (7, "SW", True, True)
 
 
@@ -521,14 +522,15 @@ def main():
     print(str(chess))
     chess.move_piece("e2", "e4")
     print(str(chess))
-    chess.move_piece("d7", "d5")
+    chess.move_piece("e7", "e5")
     print(str(chess))
-    chess.move_piece("f1", "c4")
+    chess.move_piece("f2", "f4")
     print(str(chess))
-    chess.move_piece("e7", "e6")
+    chess.move_piece("f7", "f5")
     print(str(chess))
-    chess.move_piece("c4", "e6")
+    chess.move_piece("e4", "f5")
+    print(str(chess))
+    chess.move_piece("e5", "e4")
     print(str(chess))
 
-
-# main()
+main()
