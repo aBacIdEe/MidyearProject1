@@ -2,8 +2,9 @@
 
 class Board():
 
+    board = [0 for _ in range(64)]
+
     def __init__(self): # size is built in instead of parameterized
-        self.board = [0 for _ in range(64)]
         self.turn = "White"
 
     def __str__(self):
@@ -75,7 +76,7 @@ class Board():
                 self.board[startIndex] = 0
                 tempPos = piece.position
                 piece.position = self.board.index(piece)
-                if piece.king_in_check(): # After seeing if a move is valid, make that move and check if your king is still in check
+                if piece.king_in_check(self.board): # After seeing if a move is valid, make that move and check if your king is still in check
                     self.board[startIndex] = self.board[endIndex] # if it is, then it undos the move and says invalid
                     self.board[endIndex] = temp
                     piece.position = tempPos
@@ -199,7 +200,7 @@ class Piece(Board):
         self.knightDirections = ((-15, "NE"), (-6, "NE"), (10, "SE"), (17, "SE"), (6, "SW"), (15, "SW"), (-10, "NW"), (-17, "NW")) # knight moves
         # slide function not in here to repeatedly use one "king move" until hit piece
         # for pawn moves it's a procedure
-        self.board = board
+        # self.board = board
         # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
         self.position = pos
 
@@ -234,13 +235,13 @@ class Piece(Board):
     def location_to_index(self, sr, sf, er, ef): # from rank and file to index
         pass
 
-    def king_in_check(self):
+    def king_in_check(self, board):
         if self.color == "White":
-            for location in self.board:
+            for location in board:
                 if location != 0 and str(location) == "K" and self.in_check(location.position, "White"):
                     return True
         else:
-            for location in self.board:
+            for location in board:
                 if location != 0 and str(location) == "k" and self.in_check(location.position, "Black"):
                     return True
         return False
@@ -252,7 +253,7 @@ class King(Piece):
     def __init__(self, color, board, pos):
         self.color = color
         self.directions = [(-8, "N"), (1, "E"), (8, "S"), (-1, "W"), (-7, "NE"), (9, "SE"), (7, "SW"), (-9, "NW")]
-        self.board = board
+        # self.board = board
         # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
         self.position = pos
         self.notMoved = True
@@ -325,12 +326,12 @@ class Queen(Piece):
                 if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
                     break # if the endpoint is of same color, break
 
-                valid.append(possibility) # adds possibility if empty 
-                possibility += dir[0] # increments possibility
-
                 if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
                     valid.append(possibility) # if endpoint is of opposite color
                     break # taking is as far as you can go, and break
+                
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
 
         if goal in valid:
             return True
@@ -354,12 +355,12 @@ class Bishop(Piece):
                 if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
                     break # if the endpoint is of same color, break
 
-                valid.append(possibility) # adds possibility if empty 
-                possibility += dir[0] # increments possibility
-
                 if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
                     valid.append(possibility) # if endpoint is of opposite color
                     break # taking is as far as you can go, and break
+                
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
 
         if goal in valid:
             return True
@@ -395,7 +396,7 @@ class Rook(Piece):
     def __init__(self, color, board, pos):
         self.color = color
         self.cardinalDirections = ((-8, "N"), (1, "E"), (8, "S"), (-1, "W"))
-        self.board = board
+        # self.board = board
         # init will be overwritten for king, pawn, and rook for promotion, castle eligbility, and in check
         self.position = pos
         self.castleable = True
@@ -416,12 +417,12 @@ class Rook(Piece):
                 if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
                     break # if the endpoint is of same color, break
 
-                valid.append(possibility) # adds possibility if empty 
-                possibility += dir[0] # increments possibility
-
                 if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
                     valid.append(possibility) # if endpoint is of opposite color
                     break # taking is as far as you can go, and break
+
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
 
         if goal in valid:
             self.castleable = False
@@ -438,7 +439,7 @@ class Pawn(Piece):
         else: # move down on board
             self.directions = [(8, "S", True), (9, "SE", False), (7, "SW", False), (16, "S", True)]
 
-        self.board = board
+        # self.board = board
         self.position = pos
 
         self.passanted = False
@@ -520,15 +521,14 @@ def main():
     print(str(chess))
     chess.move_piece("e2", "e4")
     print(str(chess))
-    chess.move_piece("a7", "a5")
+    chess.move_piece("d7", "d5")
     print(str(chess))
-    chess.move_piece("e4", "e5")
+    chess.move_piece("f1", "c4")
     print(str(chess))
-    chess.move_piece("f7", "f5")
+    chess.move_piece("e7", "e6")
     print(str(chess))
-    chess.move_piece("e5", "f6")
+    chess.move_piece("c4", "e6")
     print(str(chess))
-    chess.move_piece("b7", "b6")
-    print(str(chess))
+
 
 main()
