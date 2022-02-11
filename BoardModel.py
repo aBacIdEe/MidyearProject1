@@ -90,7 +90,7 @@ class Board():
                         elif startIndex - endIndex == 2: # long castle
                             self.board[startIndex - 1] = self.board[startIndex - 4]
                             self.board[startIndex - 4] = 0
-                    if str(piece).lower() == "p":
+                    elif str(piece).lower() == "p":
                         if piece.passanted:
                             if piece.color == "White":
                                 self.board[endIndex + 8] = 0
@@ -110,9 +110,9 @@ class Board():
                             elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
                             elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
                             else: self.move_confirmation(False)
-                                
-                    piece.position = self.board.index(piece)
-                    self.move_confirmation(True)
+                  
+                piece.position = self.board.index(piece)
+                self.move_confirmation(True)
             else:
                 self.move_confirmation(False)
         else:
@@ -121,9 +121,12 @@ class Board():
     def move_confirmation(self, valid):
         if valid:
             print("move made")
+            
             for i in range(64):
                 if str(self.board[i]).lower() == "p" and self.board[i].hasMoved:
                     self.board[i].timeSinceMove += 1
+            if self.end():
+                print("Checkmate")
             if self.turn == "White":
                 self.turn = "Black"
             else:
@@ -133,27 +136,30 @@ class Board():
             print("invalid move")
             return False
 
-        if self.end():
-            print("Checkmate")
+        
 
     def end(self):
-        return False
-        
         location = []
         if self.turn == "White":
             for aPiece in self.board:
                 if aPiece != 0 and aPiece.color == "White":
+                    sr, sf = 8 - aPiece.position // 8, aPiece.position % 8
                     for move in range(64):
-                        if aPiece.move(move):
+                        er, ef = 8 - move // 8, move % 8
+                        if aPiece.moves(sr, sf, er, ef):
                             return False
-                    return True
+            print("Black Wins")
+            return True
         else:
             for aPiece in self.board:
                 if aPiece != 0 and aPiece.color == "Black":
+                    sr, sf = 8 - aPiece.position // 8, aPiece.position % 8
                     for move in range(64): # for all moves a piece this turn can make
-                        if aPiece.move(move): # if there's a possible move, return not end
+                        er, ef = 8 - move // 8, move % 8
+                        if aPiece.moves(sr, sf, er, ef): # if there's a possible move, return not end
                             return False
-                    return True # other wise return True
+            print("White Wins")
+            return True # other wise return True
 
     def in_check(self, position, color):
         er = 8 - position // 8
@@ -232,9 +238,6 @@ class Piece(Board):
         if target.color == color:
             return True
         return False 
-
-    def location_to_index(self, sr, sf, er, ef): # from rank and file to index
-        pass
 
     def king_in_check(self, board):
         if self.color == "White":
@@ -538,4 +541,4 @@ def main():
     chess.move_piece("e5", "e4")
     print(str(chess))
 
-main()
+# main()
