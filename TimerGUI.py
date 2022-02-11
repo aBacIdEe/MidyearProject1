@@ -1,7 +1,6 @@
 from Timer import Timer 
-import time
 import tkinter
-from tkinter.constants import W, E, N
+from tkinter.constants import W, E
 
 class Application(tkinter.Frame):
     def __init__(self, master):
