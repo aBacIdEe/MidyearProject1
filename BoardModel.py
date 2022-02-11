@@ -2,9 +2,11 @@
 
 class Board():
 
+    
+
     def __init__(self): # size is built in instead of parameterized
-        self.board = [0 for _ in range(64)]
         self.turn = "White"
+        self.board = [0 for _ in range(64)]
 
     def __str__(self):
         result = ""
@@ -75,7 +77,7 @@ class Board():
                 self.board[startIndex] = 0
                 tempPos = piece.position
                 piece.position = self.board.index(piece)
-                if piece.king_in_check(): # After seeing if a move is valid, make that move and check if your king is still in check
+                if piece.king_in_check(self.board): # After seeing if a move is valid, make that move and check if your king is still in check
                     self.board[startIndex] = self.board[endIndex] # if it is, then it undos the move and says invalid
                     self.board[endIndex] = temp
                     piece.position = tempPos
@@ -88,7 +90,7 @@ class Board():
                         elif startIndex - endIndex == 2: # long castle
                             self.board[startIndex - 1] = self.board[startIndex - 4]
                             self.board[startIndex - 4] = 0
-                    if str(piece).lower() == "p":
+                    elif str(piece).lower() == "p":
                         if piece.passanted:
                             if piece.color == "White":
                                 self.board[endIndex + 8] = 0
@@ -108,9 +110,9 @@ class Board():
                             elif pawnPromote == "N": self.board[endIndex] = Knight(piece.color, self.board, endIndex)
                             elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
                             else: self.move_confirmation(False)
-                                
-                    piece.position = self.board.index(piece)
-                    self.move_confirmation(True)
+                  
+                piece.position = self.board.index(piece)
+                self.move_confirmation(True)
             else:
                 self.move_confirmation(False)
         else:
@@ -119,9 +121,12 @@ class Board():
     def move_confirmation(self, valid):
         if valid:
             print("move made")
+            
             for i in range(64):
                 if str(self.board[i]).lower() == "p" and self.board[i].hasMoved:
                     self.board[i].timeSinceMove += 1
+            if self.end():
+                print("Checkmate")
             if self.turn == "White":
                 self.turn = "Black"
             else:
@@ -131,14 +136,30 @@ class Board():
             print("invalid move")
             return False
 
-        if self.end():
-            print("Checkmate")
+        
 
     def end(self):
-        return False
-        for location in self.board:
-            if location != 0 and str(location) == "K" and self.in_check(location.position, "White"):
-                return True
+        location = []
+        if self.turn == "White":
+            for aPiece in self.board:
+                if aPiece != 0 and aPiece.color == "White":
+                    sr, sf = 8 - aPiece.position // 8, aPiece.position % 8
+                    for move in range(64):
+                        er, ef = 8 - move // 8, move % 8
+                        if aPiece.moves(sr, sf, er, ef):
+                            return False
+            print("Black Wins")
+            return True
+        else:
+            for aPiece in self.board:
+                if aPiece != 0 and aPiece.color == "Black":
+                    sr, sf = 8 - aPiece.position // 8, aPiece.position % 8
+                    for move in range(64): # for all moves a piece this turn can make
+                        er, ef = 8 - move // 8, move % 8
+                        if aPiece.moves(sr, sf, er, ef): # if there's a possible move, return not end
+                            return False
+            print("White Wins")
+            return True # other wise return True
 
     def in_check(self, position, color):
         er = 8 - position // 8
@@ -218,16 +239,13 @@ class Piece(Board):
             return True
         return False 
 
-    def location_to_index(self, sr, sf, er, ef): # from rank and file to index
-        pass
-
-    def king_in_check(self):
+    def king_in_check(self, board):
         if self.color == "White":
-            for location in self.board:
+            for location in board:
                 if location != 0 and str(location) == "K" and self.in_check(location.position, "White"):
                     return True
         else:
-            for location in self.board:
+            for location in board:
                 if location != 0 and str(location) == "k" and self.in_check(location.position, "Black"):
                     return True
         return False
@@ -312,12 +330,12 @@ class Queen(Piece):
                 if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
                     break # if the endpoint is of same color, break
 
-                valid.append(possibility) # adds possibility if empty 
-                possibility += dir[0] # increments possibility
-
                 if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
                     valid.append(possibility) # if endpoint is of opposite color
                     break # taking is as far as you can go, and break
+                
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
 
         if goal in valid:
             return True
@@ -341,12 +359,12 @@ class Bishop(Piece):
                 if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
                     break # if the endpoint is of same color, break
 
-                valid.append(possibility) # adds possibility if empty 
-                possibility += dir[0] # increments possibility
-
                 if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
                     valid.append(possibility) # if endpoint is of opposite color
                     break # taking is as far as you can go, and break
+                
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
 
         if goal in valid:
             return True
@@ -403,12 +421,12 @@ class Rook(Piece):
                 if self.is_piece(possibility) and self.is_same_color(self.color, possibility):
                     break # if the endpoint is of same color, break
 
-                valid.append(possibility) # adds possibility if empty 
-                possibility += dir[0] # increments possibility
-
                 if self.is_piece(possibility) and not self.is_same_color(self.color, possibility):
                     valid.append(possibility) # if endpoint is of opposite color
                     break # taking is as far as you can go, and break
+
+                valid.append(possibility) # adds possibility if empty 
+                possibility += dir[0] # increments possibility
 
         if goal in valid:
             self.castleable = False
@@ -442,6 +460,11 @@ class Pawn(Piece):
         goal = (8 - er) * 8 + ef
         valid = []
 
+        if self.color == "White": # move up on board 
+            self.directions = [(-8, "N", True), (-7, "NE", False), (-9, "NW", False), (-16, "N", True)] # note: make third state to decide validitiy
+        else: # move down on board
+            self.directions = [(8, "S", True), (9, "SE", False), (7, "SW", False), (16, "S", True)]
+
         if self.color == "White": # ADDED CHECK IF PIECE UPAHEAD FOR DOUBLE JUMP
             if self.is_piece(position - 8):
                 self.directions[0] = (-8, "N", False)
@@ -449,12 +472,12 @@ class Pawn(Piece):
 
             if self.is_piece(position - 7):
                 self.directions[1] = (-7, "NE", True)
-            if self.is_double_pawn(position + 1):
+            if self.board[position + 1] != 0 and self.board[position + 1].color == "Black" and self.is_double_pawn(position + 1):
                 self.directions[1] = (-7, "NE", True, True)
             
             if self.is_piece(position -9):
                 self.directions[2] = (-9, "NW", True)
-            if self.is_double_pawn(position - 1):
+            if self.board[position - 1] != 0 and self.board[position - 1].color == "Black" and self.is_double_pawn(position - 1):
                 self.directions[2] = (-9, "NW", True, True)
         
         elif self.color == "Black":
@@ -464,12 +487,12 @@ class Pawn(Piece):
             
             if self.is_piece(position + 9):
                 self.directions[1] = (9, "SE", True)
-            if self.is_double_pawn(position + 1):
+            if self.board[position + 1] != 0 and self.board[position + 1].color == "White" and self.is_double_pawn(position + 1):
                 self.directions[1] = (9, "SE", True, True)
     
             if self.is_piece(position + 7):
                 self.directions[2] = (7, "SW", True)
-            if self.is_double_pawn(position - 1):
+            if self.board[position - 1] != 0 and self.board[position - 1].color == "White" and self.is_double_pawn(position - 1):
                 self.directions[2] = (7, "SW", True, True)
 
 
@@ -507,15 +530,15 @@ def main():
     print(str(chess))
     chess.move_piece("e2", "e4")
     print(str(chess))
-    chess.move_piece("a7", "a5")
+    chess.move_piece("e7", "e5")
     print(str(chess))
-    chess.move_piece("e4", "e5")
+    chess.move_piece("f2", "f4")
     print(str(chess))
     chess.move_piece("f7", "f5")
     print(str(chess))
-    chess.move_piece("e5", "f6")
+    chess.move_piece("e4", "f5")
     print(str(chess))
-    chess.move_piece("b7", "b6")
+    chess.move_piece("e5", "e4")
     print(str(chess))
 
-main()
+# main()
