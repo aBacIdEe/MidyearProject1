@@ -457,6 +457,11 @@ class Pawn(Piece):
         goal = (8 - er) * 8 + ef
         valid = []
 
+        if self.color == "White": # move up on board 
+            self.directions = [(-8, "N", True), (-7, "NE", False), (-9, "NW", False), (-16, "N", True)] # note: make third state to decide validitiy
+        else: # move down on board
+            self.directions = [(8, "S", True), (9, "SE", False), (7, "SW", False), (16, "S", True)]
+
         if self.color == "White": # ADDED CHECK IF PIECE UPAHEAD FOR DOUBLE JUMP
             if self.is_piece(position - 8):
                 self.directions[0] = (-8, "N", False)
