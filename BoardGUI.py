@@ -51,18 +51,24 @@ class Application(Frame):
         if not pressed:
             # this is the first button
             self.moves.append(pos)
+
         else:
             # this is the second button being pressed
             # getting the last move
             chess.move_piece(self.moves[-1], pos)
             for i in range(len(self.buttonList)):
                 if str(chess.board[i]) != "0":
-                    self.buttonList[i]["text"] = str(chess.board[i])
-                else:
-                    pieceImg = Image.open(IMAGESOFPIECES.get(t))
+                    pieceImg = Image.open(IMAGESOFPIECES[str(chess.board[i])])
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
-                    self.buttonList[i]["image"] = IMAGESOFPIECES[self.buttonList[i]['text']]
+                    self.buttonList[i].photo = convertedImg
+                    self.buttonList[i]['image'] = convertedImg
+                else: 
+                    pieceImg = Image.open('images/blankspace.png')
+                    pieceImg = pieceImg.resize((50,50))
+                    convertedImg = ImageTk.PhotoImage(pieceImg)
+                    self.buttonList[i].photo = convertedImg
+                    self.buttonList[i]["image"] = convertedImg
 
     def isButtonPressed(self):
         if self.buttonPressed:
@@ -77,6 +83,7 @@ class Application(Frame):
     def create_widgets(self):
         self.buttonPressed = False
         self.moves = []
+        self.imagesUsed = []
         x = 0
         self.rowLabels = list('abcdefgh')
         w, h = 70, 60
@@ -102,7 +109,7 @@ class Application(Frame):
                         self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
                         self.buttonList[-1].photo = convertedImg
                         self.buttonList[-1].grid(row=row,column=column)
-                    else:
+                    else: 
                         self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
                         self.buttonList[-1].photo = convertedImg
                         self.buttonList[-1].grid(row=row,column=column)
