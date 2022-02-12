@@ -544,4 +544,4 @@ def main():
     chess.move_piece("f3", "f7")
     print(str(chess))
 
-main()
+# main()
