@@ -44,7 +44,7 @@ class Application(Frame):
         self.buttonList = []
         self.create_widgets()
 
-    def getPos(self, r, c):
+    def getPos(self, r, c, t):
         '''Gets the grid position of the position using row and column'''
         pos = (GRIDLIST[r-1][c-1])
         pressed = self.isButtonPressed()
@@ -99,20 +99,20 @@ class Application(Frame):
                     convertedImg = ImageTk.PhotoImage(pieceImg)
                 if row%2==0:
                     if column%2==0:
-                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='white', command=(lambda r,c,t: lambda:self.getPos(r,c,t))(row,column)))
                         self.buttonList[-1].photo = convertedImg
                         self.buttonList[-1].grid(row=row,column=column)
                     else:
-                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='tan', command=(lambda r,c,t: lambda:self.getPos(r,c,t))(row,column)))
                         self.buttonList[-1].photo = convertedImg
                         self.buttonList[-1].grid(row=row,column=column)
                 else:
                     if column%2==0:
-                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='tan', command=(lambda r,c,t: lambda:self.getPos(r,c,t))(row,column)))
                         self.buttonList[-1].photo = convertedImg
                         self.buttonList[-1].grid(row=row,column=column)
                     else:    
-                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='white', command=(lambda r,c,t: lambda:self.getPos(r,c,t))(row,column)))
                         self.buttonList[-1].photo = convertedImg
                         self.buttonList[-1].grid(row=row,column=column)
                 x += 1
