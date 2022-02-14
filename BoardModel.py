@@ -125,12 +125,13 @@ class Board():
             for i in range(64):
                 if str(self.board[i]).lower() == "p" and self.board[i].hasMoved:
                     self.board[i].timeSinceMove += 1
+            
+            if self.turn == "White": self.turn = "Black"
+            elif self.turn == "Black": self.turn = "White"
+            
             if self.end():
                 print("Checkmate")
-            if self.turn == "White":
-                self.turn = "Black"
-            else:
-                self.turn = "White"
+            
             return True
         elif not valid:
             print("invalid move")
@@ -139,15 +140,29 @@ class Board():
         
 
     def end(self):
-        location = []
         if self.turn == "White":
             for aPiece in self.board:
                 if aPiece != 0 and aPiece.color == "White":
                     sr, sf = 8 - aPiece.position // 8, aPiece.position % 8
                     for move in range(64):
                         er, ef = 8 - move // 8, move % 8
-                        if aPiece.moves(sr, sf, er, ef):
-                            return False
+                        if aPiece.moves(sr, sf, er, ef): # if there's a possible move, return not end
+                            startIndex = aPiece.position
+                            endIndex = move
+                            temp = self.board[endIndex]
+                            self.board[endIndex] = self.board[startIndex]
+                            self.board[startIndex] = 0
+                            #tempPos = aPiece.position
+                            #aPiece.position = self.board.index(aPiece)
+                            if aPiece.king_in_check(self.board): # After seeing if a move is valid, make that move and check if your king is still in check
+                                self.board[startIndex] = self.board[endIndex] # if it is, then it undos the move and continue to check
+                                self.board[endIndex] = temp
+                                #aPiece.position = tempPos
+                                continue
+                            else: # otherwise stop
+                                self.board[startIndex] = self.board[endIndex] # if it is, then it undos the move and continue to check
+                                self.board[endIndex] = temp
+                                return False
             print("Black Wins")
             return True
         else:
@@ -157,7 +172,22 @@ class Board():
                     for move in range(64): # for all moves a piece this turn can make
                         er, ef = 8 - move // 8, move % 8
                         if aPiece.moves(sr, sf, er, ef): # if there's a possible move, return not end
-                            return False
+                            startIndex = aPiece.position
+                            endIndex = move
+                            temp = self.board[endIndex]
+                            self.board[endIndex] = self.board[startIndex]
+                            self.board[startIndex] = 0
+                            #tempPos = aPiece.position
+                            #aPiece.position = self.board.index(aPiece)
+                            if aPiece.king_in_check(self.board): # After seeing if a move is valid, make that move and check if your king is still in check
+                                self.board[startIndex] = self.board[endIndex] # if it is, then it undos the move and continue to check
+                                self.board[endIndex] = temp
+                                #aPiece.position = tempPos
+                                continue
+                            else: # otherwise stop
+                                self.board[startIndex] = self.board[endIndex] # if it is, then it undos the move and continue to check
+                                self.board[endIndex] = temp
+                                return False
             print("White Wins")
             return True # other wise return True
 
@@ -532,13 +562,15 @@ def main():
     print(str(chess))
     chess.move_piece("e7", "e5")
     print(str(chess))
-    chess.move_piece("f2", "f4")
+    chess.move_piece("f1", "c4")
     print(str(chess))
-    chess.move_piece("f7", "f5")
+    chess.move_piece("a7", "a5")
     print(str(chess))
-    chess.move_piece("e4", "f5")
+    chess.move_piece("d1", "f3")
     print(str(chess))
-    chess.move_piece("e5", "e4")
+    chess.move_piece("b7", "b6")
+    print(str(chess))
+    chess.move_piece("f3", "f7")
     print(str(chess))
 
-# main()
+main()
