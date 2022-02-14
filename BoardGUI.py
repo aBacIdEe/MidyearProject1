@@ -69,6 +69,10 @@ class Application(Frame):
                     convertedImg = ImageTk.PhotoImage(pieceImg)
                     self.buttonList[i].photo = convertedImg
                     self.buttonList[i]["image"] = convertedImg
+        self.updateTurnLabel()
+
+    def updateTurnLabel(self):
+        self.turnLabel['text'] = chess.turn
 
     def isButtonPressed(self):
         if self.buttonPressed:
@@ -93,10 +97,6 @@ class Application(Frame):
                 if t == '0':
                     t = ''
                 if t != '':
-                    '''imgSmall = tkinter.PhotoImage(file='images/'+imageName)
-                        w = tkinter.Label(self, image=imgSmall)
-                        w.photo = imgSmall
-                        w.grid(row=r2,column=1)'''
                     pieceImg = Image.open(IMAGESOFPIECES.get(t))
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
@@ -127,6 +127,8 @@ class Application(Frame):
             Label(self,image=convertedImg).grid(row=10,column=0)
         for i in range(len(self.rowLabels)):
             Label(self, text=self.rowLabels[i]).grid(row=9,column=i+1)
+        self.turnLabel = Label(self,text='White')
+        self.turnLabel.grid(row=10,column=0,columnspan=10)
 
 root = Tk()
 root.title('Board GUI')
