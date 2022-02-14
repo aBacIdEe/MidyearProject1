@@ -140,6 +140,8 @@ class Board():
         
 
     def end(self):
+        return False
+        location = []
         if self.turn == "White":
             for aPiece in self.board:
                 if aPiece != 0 and aPiece.color == "White":
@@ -562,15 +564,15 @@ def main():
     print(str(chess))
     chess.move_piece("e7", "e5")
     print(str(chess))
-    chess.move_piece("f1", "c4")
+    chess.move_piece("d1", "f3")
     print(str(chess))
     chess.move_piece("a7", "a5")
     print(str(chess))
-    chess.move_piece("d1", "f3")
+    chess.move_piece("f1", "c4")
     print(str(chess))
     chess.move_piece("b7", "b6")
     print(str(chess))
     chess.move_piece("f3", "f7")
     print(str(chess))
 
-main()
+# main()

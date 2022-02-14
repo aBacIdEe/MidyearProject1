@@ -1,5 +1,5 @@
 from tkinter import *
-
+from PIL import Image, ImageTk
 import BoardModel as bm
 
 GRIDLIST = ['a8 b8 c8 d8 e8 f8 g8 h8'.split(),
@@ -12,6 +12,27 @@ GRIDLIST = ['a8 b8 c8 d8 e8 f8 g8 h8'.split(),
             'a1 b1 c1 d1 e1 f1 g1 h1'.split()]
 
 BUTTONS = []
+
+'''imgSmall = tkinter.PhotoImage(file='images/'+imageName)
+    w = tkinter.Label(self, image=imgSmall)
+    w.photo = imgSmall
+    w.grid(row=r2,column=1)'''
+
+IMAGESOFPIECES = {
+    'r': 'images/blackrookpiece.png',
+    'R': 'images/whiterookpiece.png',
+    'n': 'images/blackknightpiece.png',
+    'N': 'images/whiteknightpiece.png',
+    'b': 'images/blackbishoppiece.png',
+    'B': 'images/whitebishoppiece.png',
+    'q': 'images/blackqueenpiece.png',
+    'Q': 'images/whitequeenpiece.png',
+    'k': 'images/blackkingpiece.png',
+    'K': 'images/whitekingpiece.png',
+    'p': 'images/blackpawnpiece.png',
+    'P': 'images/whitepawnpiece.png',
+    '': 'images/blankspace.png'
+}
 
 # Setting up the board        
 chess = bm.Board()
@@ -30,15 +51,24 @@ class Application(Frame):
         if not pressed:
             # this is the first button
             self.moves.append(pos)
+
         else:
             # this is the second button being pressed
             # getting the last move
             chess.move_piece(self.moves[-1], pos)
             for i in range(len(self.buttonList)):
                 if str(chess.board[i]) != "0":
-                    self.buttonList[i]["text"] = str(chess.board[i])
-                else:
-                    self.buttonList[i]["text"] = ""
+                    pieceImg = Image.open(IMAGESOFPIECES[str(chess.board[i])])
+                    pieceImg = pieceImg.resize((50,50))
+                    convertedImg = ImageTk.PhotoImage(pieceImg)
+                    self.buttonList[i].photo = convertedImg
+                    self.buttonList[i]['image'] = convertedImg
+                else: 
+                    pieceImg = Image.open('images/blankspace.png')
+                    pieceImg = pieceImg.resize((50,50))
+                    convertedImg = ImageTk.PhotoImage(pieceImg)
+                    self.buttonList[i].photo = convertedImg
+                    self.buttonList[i]["image"] = convertedImg
 
     def isButtonPressed(self):
         if self.buttonPressed:
@@ -53,33 +83,48 @@ class Application(Frame):
     def create_widgets(self):
         self.buttonPressed = False
         self.moves = []
+        self.imagesUsed = []
         x = 0
         self.rowLabels = list('abcdefgh')
+        w, h = 70, 60
         for row in range(1,9):
             for column in range(1,9):
                 t = str(chess.board[x])
                 if t == '0':
                     t = ''
+                if t != '':
+                    '''imgSmall = tkinter.PhotoImage(file='images/'+imageName)
+                        w = tkinter.Label(self, image=imgSmall)
+                        w.photo = imgSmall
+                        w.grid(row=r2,column=1)'''
+                    pieceImg = Image.open(IMAGESOFPIECES.get(t))
+                    pieceImg = pieceImg.resize((50,50))
+                    convertedImg = ImageTk.PhotoImage(pieceImg)
+                elif t == '':
+                    pieceImg = Image.open("images/blankspace.png")
+                    pieceImg = pieceImg.resize((50,50))
+                    convertedImg = ImageTk.PhotoImage(pieceImg)
                 if row%2==0:
                     if column%2==0:
-                        # self.printPos(row,column)
-                        self.buttonList.append(Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList[-1].photo = convertedImg
                         self.buttonList[-1].grid(row=row,column=column)
-                    else:
-                        # self.printPos(row,column)
-                        # (lambda r,c: lambda:self.printPos(r,c))(row,column)
-                        self.buttonList.append(Button(self, width=6, height=3, text=t, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                    else: 
+                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList[-1].photo = convertedImg
                         self.buttonList[-1].grid(row=row,column=column)
                 else:
-                    if column%2==1:
-                        self.buttonList.append(Button(self, width=6, height=3, text=t, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                    if column%2==0:
+                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList[-1].photo = convertedImg
                         self.buttonList[-1].grid(row=row,column=column)
-                    else:
-                        # self.printPos(row,column)
-                        self.buttonList.append(Button(self, width=6, height=3, text=t, bg='tan', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                    else:    
+                        self.buttonList.append(Button(self, width=w, height=h, image=convertedImg, bg='white', command=(lambda r,c: lambda:self.getPos(r,c))(row,column)))
+                        self.buttonList[-1].photo = convertedImg
                         self.buttonList[-1].grid(row=row,column=column)
                 x += 1
             Label(self, text=row).grid(row=9-row,column=0)
+            Label(self,image=convertedImg).grid(row=10,column=0)
         for i in range(len(self.rowLabels)):
             Label(self, text=self.rowLabels[i]).grid(row=9,column=i+1)
 
