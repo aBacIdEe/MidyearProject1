@@ -111,8 +111,8 @@ class Board():
                             elif pawnPromote == "R": self.board[endIndex] = Rook(piece.color, self.board, endIndex)
                             else: self.move_confirmation(False)
                   
-                piece.position = self.board.index(piece)
-                self.move_confirmation(True)
+                    piece.position = self.board.index(piece)
+                    self.move_confirmation(True)
             else:
                 self.move_confirmation(False)
         else:
