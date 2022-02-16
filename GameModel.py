@@ -1,4 +1,3 @@
-from http.client import NETWORK_AUTHENTICATION_REQUIRED
 from BoardModel import Board
 
 class Game():
@@ -37,12 +36,56 @@ class Game():
     def index_to_notation(self, index):
         pass
 
-    def make_move(self, start, end): # move is in the form "e2", "e4"
-        start = self.notation_to_index(start)
-        end = self.notation_to_index(end)
+    def eval_rays(self): # filters ALL_MOVES for rays
+        '''
+        Our Original Moves, only the nonempty indicies are in here
+        '''
+        ALL_MOVES = self.board.all_moves()
+
+
+        '''
+        Iterates through all indicies of the board, and skips that index if it's empty
+        '''
+        for i in range(64):
+            if self.board[i] == " ":
+                continue
+            else:
+                '''
+                Creates a revised Moves list which recompiles the list based on the pieces on the board
+                '''
+                pieceMoves = ALL_MOVES[str(i)]
+                revisedMoves = []
+                if self.board[i].isupper(): # Checks if the piece that we're checking is white or black
+                    color = "White"
+                else:
+                    color = "Black"
+                
+                '''
+                Creates a revised Ray list which recompiles each individual ray
+                '''
+                for ray in pieceMoves:
+                    revisedRay = []
+
+                    for tile in ray:
+                        if self.board[tile] == " ":
+                            revisedRay.append(tile)
+                        elif self.board[tile].isupper() and color == "White" or self.board[tile].islower() and color == "Black":
+                            break
+                        else:
+                            revisedRay.append(tile)
+                            break
+
+                    '''
+                    Aggregates all the revised Rays to the revised Moves list
+                    '''
+                    revisedMoves.append(revisedRay) # updates the
+            
+            '''
+            Aggregates all the revised Moves to the ALL_MOVES dictionary
+            '''
+            ALL_MOVES[str(i)] = revisedMoves
 
         
-        pass
 
     def get_moves(self, player):
         pass

@@ -1,5 +1,15 @@
 class Board():
 
+    '''
+    Clockwise from the Top, all directions for each ray
+    And then all the knight rotations, it doesn't matter since DIRECTIONS will restrict the rays anyways
+    '''
+    RAYS = [(1, 0), (1, 1), (0, 1), (1, -1), (0, -1), (-1, -1), (-1, 1), (-1, 1)
+            (1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2)]
+
+    '''
+    After generating a full ray in every direction for each piece, restrict it to the following conditions.
+    '''
     DIRECTIONS = {"P": lambda index, dx, dy: (8 - index // 8) > 1 and -1 <= dx <= 1 and dy == 1,
                   "p": lambda index, dx, dy: (8 - index // 8) < 8 and -1 <= dx <= 1 and dy == -1,
                   "n": lambda index, dx, dy: (abs(dx) + abs(dy) == 3) and abs(dx) >= 1 and abs(dy) >= 1,
@@ -56,30 +66,47 @@ class Board():
     def all_moves(self):
         MOVES = {}
         for i in range(64):
-            MOVES[self.index_to_notation(i)] = self.moves(i)
+            MOVES[str(i)] = self.moves(i)
 
         return MOVES
 
     def moves(self, index):
         PIECE_MOVES = []
-        piece = self.board[index]
         
-        startingRank = 8 - index // 8
-        startingFile = index % 8
+        for dir in self.DIRECTIONS: # for each ray, append it to the piece's moves
+            ray = self.rays(dir, index)
 
-        for i in range(64):
-            endingRank = 8 - i // 8
-            endingFile = i % 8
-            deltaRank = endingRank - startingRank
-            deltaFile = endingFile - startingFile
+            if ray == None:
+                continue
+            else:
+                PIECE_MOVES.append(ray)
 
-            if piece != "P":
-                piece.lower()
+        return PIECE_MOVES # in the form of a list in each direction cycling clockwise from the top
 
-            if self.DIRECTIONS[piece](index, deltaRank, deltaFile):
-                PIECE_MOVES.append(i)
+    def rays(self, direction, index):
+        piece = self.board[index]
 
-        return PIECE_MOVES
+        if piece == " ":
+            return None
+
+        RAY = []
+
+        dx = direction[0]
+        dy = direction[1]
+        
+        Rank = 8 - index // 8
+        File = index % 8
+
+        while 0 <= Rank < 8 and 1 <= File <= 8: # Extend ray until edge is hit
+            Rank += dx
+            File += dy
+
+            endIndex = 8 * Rank + File
+
+            if self.DIRECTIONS[piece](endIndex):
+                RAY.append(endIndex)
+
+        return RAY
         
         
 
