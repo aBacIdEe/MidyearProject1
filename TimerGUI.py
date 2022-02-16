@@ -8,11 +8,16 @@ class Application(tkinter.Frame):
         self.grid()
         self.create_widgets()
         self.set_obj = 0
-        self.time_over = False
+        self.white_time_over = False #time over meaning time has ended
+        self.black_time_over = True
+        self.turn = True #True means white, False means black
 
     def create_widgets(self):
-        self.timer = tkinter.Label(self)
-        self.timer.grid(row = 0, column = 0, sticky = W)
+        self.white_timer = tkinter.Label(self)
+        self.white_timer.grid(row = 0, column = 0, sticky = W)#get two of these
+
+        self.black_timer = tkinter.Label(self)
+        self.black_timer.grid(row = 0, column = 1, sticky = W)
 
         tkinter.Button(self, text = "How much seconds?", command = self.set_seconds).grid(row = 1, column = 0, sticky = E)
         self.seconds_ent = tkinter.Entry(self)
@@ -40,27 +45,44 @@ class Application(tkinter.Frame):
 
     def set_object(self):
         if self.set_obj >= 2:
-            self.obj = Timer(self.seconds, self.increment)
-            self.start_timer()
+            self.white = Timer(self.seconds, self.increment)
+            self.black = Timer(self.seconds, self.increment)
+            self.show_timer()
             self.update()
 
-    def start_timer(self):
-        self.timer['text'] = self.obj.string()
+    def show_timer(self):
+        self.white_timer['text'] = self.white.string()
+        self.black_timer['text'] = self.black.string()
     
     def add_increment(self):
-        self.obj.add_increment()
-        self.start_timer()
+        if self.turn == True:
+            self.white.add_increment()
+        else: self.black.add_increment(); self.update_turn()
+        self.show_timer()
+        self.update_turn()
+        
 
     def give_time(self):
-        self.obj.time += int(self.give_time_ent.get())
-        self.start_timer()
+        #check who is giving who
+        if self.turn == True: self.white.time += int(self.give_time_ent.get())
+        else: self.black.time += int(self.give_time_ent.get())
+        self.show_timer()
 
     def update(self):
-        if self.obj.time > 0:
-            self.obj.time -= 1
-            self.start_timer()
+        if self.white.time > 0:
+            if self.turn == True:
+                self.white.time -= 1
+            else:
+                self.black.time -= 1
+            self.show_timer()
             self.after(1000, self.update)
-        else: self.time_over = True
+        else:
+            if self.turn == True: self.white_time_over = True
+            else: self.black_time_over = True
+    
+    def update_turn(self):
+        if self.turn == True: self.turn = False
+        else: self.turn = True
             
 
 root = tkinter.Tk()
