@@ -29,12 +29,22 @@ class Game():
         self.move_history = []
         self.fen_history = []
 
-    def notation_to_index(self, notation):
+    def notation_to_index(self, notation): # 
         notation = list(notation)
         return notation[1] * 8 + ord(notation[0]) - 96
 
     def index_to_notation(self, index):
         pass
+
+    def validate_moves(self): # filters all moves for check and such
+        self.eval_rays() # evaluate the rays
+        for piece in self.board.all_moves(): # Iterates through all indicies of all pieces
+            testBoard = Board(fen=str(self.board)) # Create a test board
+            for move in self.board.all_moves[piece]: # Iterate through all moves from that piece
+                testBoard.move_piece() # make that move on the test board
+
+                # compile a list of all enemy moves and see if our our side is in check
+
 
     def eval_rays(self): # filters ALL_MOVES for rays
         '''
@@ -84,11 +94,6 @@ class Game():
             Aggregates all the revised Moves to the ALL_MOVES dictionary
             '''
             ALL_MOVES[str(i)] = revisedMoves
-
-        
-
-    def get_moves(self, player):
-        pass
 
     def update_status(self):
         pass
