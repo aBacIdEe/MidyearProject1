@@ -63,6 +63,23 @@ class Board():
         rank = str(8 - index // 8)
         return file + rank
 
+    def get_player_moves(self, color):
+        ALL_MOVES = self.board.all_moves()
+        PLAYER_MOVES = {}
+
+        if color == "White":
+            for index in ALL_MOVES:
+                if index.isupper():
+                    PLAYER_MOVES[index] = ALL_MOVES[index]
+
+        else:
+            for index in ALL_MOVES:
+                if index.islower():
+                    PLAYER_MOVES[index] = ALL_MOVES[index]
+
+        return PLAYER_MOVES
+
+
     def all_moves(self):
         MOVES = {}
         for i in range(64):

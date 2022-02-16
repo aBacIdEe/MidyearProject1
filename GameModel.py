@@ -38,10 +38,48 @@ class Game():
 
     def validate_moves(self): # filters all moves for check and such
         self.eval_rays() # evaluate the rays
-        for piece in self.board.all_moves(): # Iterates through all indicies of all pieces
+        ALL_MOVES = self.board.all_moves()
+        VALID_MOVES = {}
+
+        for index in ALL_MOVES: # Iterates through all indicies of all pieces
             testBoard = Board(fen=str(self.board)) # Create a test board
-            for move in self.board.all_moves[piece]: # Iterate through all moves from that piece
-                testBoard.move_piece() # make that move on the test board
+            validPieceMoves = []
+            
+            if self.board[index].isupper():
+                color = "White"
+                playerMoves = testBoard.get_player_moves("White")
+                kingIndex = self.board.index("K")
+            else:
+                color = "Black"
+                playerMoves = testBoard.get_player_moves("Black")
+                kingIndex = self.board.index("k")
+
+            for rays in ALL_MOVES[index]: # Iterate through all rays from that piece
+                for move in rays:
+                    testBoard.move_piece(int(index), move, self.board[int(index)]) # make that move on the test board
+                    
+                    attackedSquares = []
+                    if color == "White":
+                        for testIndex in playerMoves:
+                            attackedSquares += playerMoves[testIndex]
+                        if kingIndex in attackedSquares:
+                            continue
+                        else:
+                            validPieceMoves.append(move)
+                    else:
+                        for testIndex in playerMoves:
+                            attackedSquares += playerMoves[testIndex]
+                        if kingIndex in attackedSquares:
+                            continue
+                        else:
+                            validPieceMoves.append(move)
+            
+            VALID_MOVES[index] = validPieceMoves
+        
+        return VALID_MOVES
+
+
+                    
 
                 # compile a list of all enemy moves and see if our our side is in check
 
