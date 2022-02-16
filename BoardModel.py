@@ -32,7 +32,7 @@ class Board():
 
         return "".join(result)
 
-    def set_fen(self, fen):
+    def set_board(self, fen):
         self.position = []
 
         for char in fen:
@@ -58,6 +58,8 @@ class Board():
         for i in range(64):
             MOVES[self.index_to_notation(i)] = self.moves(i)
 
+        return MOVES
+
     def moves(self, index):
         PIECE_MOVES = []
         piece = self.board[index]
@@ -71,11 +73,14 @@ class Board():
             deltaRank = endingRank - startingRank
             deltaFile = endingFile - startingFile
 
+            if piece != "P":
+                piece.lower()
+
             if self.DIRECTIONS[piece](index, deltaRank, deltaFile):
                 PIECE_MOVES.append(i)
 
-        # sort moves by distance from starting point to account for "line moves" that extend from the center
-
+        return PIECE_MOVES
+        
         
 
             
