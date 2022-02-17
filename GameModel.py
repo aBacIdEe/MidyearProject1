@@ -12,7 +12,7 @@ class Game():
         self.set_fen(fen)
 
     def __str__(self):
-        return str(self.board)
+        return ' '.join([str(self.board)] + self.state)
 
     def set_fen(self, fen):
         fen = fen.split()
@@ -34,7 +34,7 @@ class Game():
         return notation[1] * 8 + ord(notation[0]) - 96
 
     def get_player_moves(self, color):
-        ALL_MOVES = self.validate_moves()
+        ALL_MOVES = self.eval_rays()
         PLAYER_MOVES = {}
 
         if color == "White":
@@ -72,10 +72,18 @@ class Game():
     def extra_moves(self): # Adds En Passant and Castling and checks their validity, but the actual movement of pieces is not here
         ALL_MOVES = self.validate_moves()
         if self.state[1] != "-": # Castling
-            if "K" in self.state[1] : ALL_MOVES["K"].append(62)
-            if "k" in self.state[1]: ALL_MOVES["k"].append(6)
-            if "Q" in self.state[1]: ALL_MOVES["Q"].append(58)
-            if "q" in self.state[1]: ALL_MOVES["q"].append(2)
+            if "K" in self.state[1] and self.board.board[61] == " " and self.board.board[62] == " " \
+                and not(self.is_attacked(60, "Black") and self.is_attacked(61, "Black") and self.is_attacked(62, "Black")): 
+                ALL_MOVES["K"].append(62)
+            if "k" in self.state[1] and self.board.board[57] == " " and self.board.board[58] == " " and self.board.board[59] \
+                and not(self.is_attacked(4, "White") and self.is_attacked(5, "White") and self.is_attacked(6, "White")): 
+                ALL_MOVES["Kk"].append(6)
+            if "Q" in self.state[1] and self.board.board[5] == " " and self.board.board[6] == " " \
+                and not(self.is_attacked(60, "Black") and self.is_attacked(59, "Black") and self.is_attacked(58, "Black")): 
+                ALL_MOVES["K"].append(58)
+            if "q" in self.state[1] and self.board.board[1] == " " and self.board.board[2] == " " and self.board.board[3] \
+                and not(self.is_attacked(4, "White") and self.is_attacked(3, "White") and self.is_attacked(2, "White")): 
+                ALL_MOVES["K"].append(2)
 
         if self.state[2] != "-": # En Passant
             targetIndex = self.notation_to_index(self.state[2])
@@ -94,14 +102,14 @@ class Game():
 
     def validate_moves(self): # filters all moves for check and such
         ALL_MOVES = self.eval_rays() # evaluate the rays
-        print(ALL_MOVES)
-        print()
+        #print(ALL_MOVES)
+        #print()
         VALID_MOVES = {}
 
         for index in ALL_MOVES: # Iterates through all indicies of all pieces
-            testBoard = Board(fen=str(self.board)) # Create a test board
+            testBoard = Game(fen=str(self)) # Create a test board
             validPieceMoves = []
-            
+            # add depth counter for this statement, OR currently trying to use not validated moves but evalulated rays
             if self.board.board[int(index)].isupper():
                 color = "White"
                 playerMoves = testBoard.get_player_moves("White")
@@ -113,7 +121,7 @@ class Game():
 
             for rays in ALL_MOVES[index]: # Iterate through all rays from that piece
                 for move in rays:
-                    testBoard.move_piece(int(index), move, self.board.board[int(index)]) # make that move on the test board
+                    testBoard.board.move_piece(int(index), move, self.board.board[int(index)]) # make that move on the test board
                     
                     attackedSquares = []
                     if color == "White":
