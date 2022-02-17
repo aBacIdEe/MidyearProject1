@@ -122,13 +122,6 @@ class Application(Frame):
         else: self.black.add_increment(); self.update_turn()
         self.show_timer()
         self.update_turn()
-        
-
-    def give_time(self):
-        #check who is giving who
-        if self.turn == True: self.white.time += int(self.give_time_ent.get())
-        else: self.black.time += int(self.give_time_ent.get())
-        self.show_timer()
 
     def update(self):
         if self.white.time > 0:
@@ -195,7 +188,7 @@ class Application(Frame):
         # TIMER
 
         self.white_timer = Label(self, text = "insert time", bg = "white", fg = "black")
-        self.white_timer.grid(row = 0, column = 11, sticky = W)#get two of these
+        self.white_timer.grid(row = 5, column = 11, sticky = W)#get two of these
 
         self.black_timer = Label(self, text = "insert time", bg = "black", fg = "white")
         self.black_timer.grid(row = 0, column = 11, sticky = W)
@@ -211,11 +204,6 @@ class Application(Frame):
 
         self.inc_ent = Entry(self)
         self.inc_ent.grid(row = 2, column = 11, sticky = W)
-
-
-        Button(self, text = "Give time", command = self.give_time).grid(row = 3, column = 12, sticky = E)
-        self.give_time_ent = Entry(self)
-        self.give_time_ent.grid(row = 3, column = 11, sticky = W)
 
 
 root = Tk()
