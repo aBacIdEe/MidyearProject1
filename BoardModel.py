@@ -4,25 +4,25 @@ class Board():
     Clockwise from the Top, all directions for each ray
     And then all the knight rotations, it doesn't matter since DIRECTIONS will restrict the rays anyways
     '''
-    RAYS = [(1, 0), (1, 1), (0, 1), (1, -1), (0, -1), (-1, -1), (-1, 1), (-1, 1)
+    RAYS = [(0, 1), (1, 1), (1, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (-1, 1),
             (1, 2), (2, 1), (2, -1), (1, -2), (-1, -2), (-2, -1), (-2, 1), (-1, 2)]
 
     '''
     After generating a full ray in every direction for each piece, restrict it to the following conditions.
     '''
-    DIRECTIONS = {"P": lambda index, dx, dy: (8 - index // 8) > 1 and -1 <= dx <= 1 and dy == 1,
-                  "p": lambda index, dx, dy: (8 - index // 8) < 8 and -1 <= dx <= 1 and dy == -1,
+    DIRECTIONS = {"P": lambda index, dx, dy: (8 - index // 8) > 1 and abs(dy) <= 1 and dx == 1,
+                  "p": lambda index, dx, dy: (8 - index // 8) < 8 and abs(dy) <= 1 and dx == -1,
                   "n": lambda index, dx, dy: (abs(dx) + abs(dy) == 3) and abs(dx) >= 1 and abs(dy) >= 1,
                   "b": lambda index, dx, dy: abs(dx) == abs(dy),
                   "r": lambda index, dx, dy: dx == 0 or dy == 0,
                   "q": lambda index, dx, dy: dx == 0 or dy == 0 or abs(dx) == abs(dy),
-                  "k": lambda index, dx, dy: dx <= 1 and dy <= 1}
+                  "k": lambda index, dx, dy: abs(dx) <= 1 and abs(dy) <= 1}
 
     default_fen = " " * 64
 
     def __init__(self, fen=default_fen):
         self.board = []
-        self.set_fen(fen)
+        self.set_board(fen)
 
     def __str__(self): # returns FEN str of Board
         result = []
@@ -35,24 +35,24 @@ class Board():
             if piece != " ": # if it's not a space, append the piece
                 result.append(piece)
             elif piece == " ": # if it is a space, append a digit of 1, and if there's already an integer there, add one to it
-                if result[-1].is_integer():
-                    result[-1] += 1
+                if result and result[-1].isdigit():
+                    result[-1] = str(int(result[-1]) + 1)
                 else:
-                    result.append(1)
+                    result.append("1")
 
         return "".join(result)
 
     def set_board(self, fen):
-        self.position = []
+        self.board = []
 
         for char in fen:
             if char == "/":
                 continue
             elif char.isdigit():
                 for _ in range(int(char)):
-                    self.position.append(" ")
+                    self.board.append(" ")
             else:
-                self.position.append(char)
+                self.board.append(char)
 
     def move_piece(self, start, end, piece):
         self.board[end] = piece
@@ -63,37 +63,22 @@ class Board():
         rank = str(8 - index // 8)
         return file + rank
 
-    def get_player_moves(self, color):
-        ALL_MOVES = self.board.all_moves()
-        PLAYER_MOVES = {}
-
-        if color == "White":
-            for index in ALL_MOVES:
-                if index.isupper():
-                    PLAYER_MOVES[index] = ALL_MOVES[index]
-
-        else:
-            for index in ALL_MOVES:
-                if index.islower():
-                    PLAYER_MOVES[index] = ALL_MOVES[index]
-
-        return PLAYER_MOVES
-
-
     def all_moves(self):
         MOVES = {}
         for i in range(64):
-            MOVES[str(i)] = self.moves(i)
+            moves = self.moves(i)
+            if moves:
+                MOVES[str(i)] = moves
 
         return MOVES
 
     def moves(self, index):
         PIECE_MOVES = []
         
-        for dir in self.DIRECTIONS: # for each ray, append it to the piece's moves
+        for dir in self.RAYS: # for each ray, append it to the piece's moves
             ray = self.rays(dir, index)
 
-            if ray == None:
+            if ray == None or not ray:
                 continue
             else:
                 PIECE_MOVES.append(ray)
@@ -105,23 +90,32 @@ class Board():
 
         if piece == " ":
             return None
+        
+        if piece != "P":
+            piece = piece.lower()
+
+        if piece == "k":
+            pass
 
         RAY = []
 
         dx = direction[0]
         dy = direction[1]
-        
+
         Rank = 8 - index // 8
         File = index % 8
 
-        while 0 <= Rank < 8 and 1 <= File <= 8: # Extend ray until edge is hit
-            Rank += dx
-            File += dy
+        originalRank = Rank
+        originalFile = File
 
-            endIndex = 8 * Rank + File
+        while 1 <= Rank <= 8 and 0 <= File < 8: # Extend ray until edge is hit
+            endIndex = 8 * (8 - Rank) + File
 
-            if self.DIRECTIONS[piece](endIndex):
+            if self.DIRECTIONS[piece](endIndex, Rank - originalRank, File - originalFile) and index != endIndex:
                 RAY.append(endIndex)
+
+            Rank += dy
+            File += dx
 
         return RAY
         
