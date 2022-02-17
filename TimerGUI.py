@@ -61,7 +61,6 @@ class Application(tkinter.Frame):
             self.start_timer()
             self.after(1000, self.update)
         else: self.time_over = True
-            
 
 root = tkinter.Tk()
 root.title("Timer GUI")

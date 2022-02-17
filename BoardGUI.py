@@ -1,4 +1,5 @@
 from tkinter import *
+from Timer import Timer
 from PIL import Image, ImageTk
 import BoardModel as bm
 
@@ -13,8 +14,8 @@ GRIDLIST = ['a8 b8 c8 d8 e8 f8 g8 h8'.split(),
 
 BUTTONS = []
 
-'''imgSmall = tkinter.PhotoImage(file='images/'+imageName)
-    w = tkinter.Label(self, image=imgSmall)
+'''imgSmall = PhotoImage(file='images/'+imageName)
+    w = Label(self, image=imgSmall)
     w.photo = imgSmall
     w.grid(row=r2,column=1)'''
 
@@ -42,6 +43,8 @@ class Application(Frame):
         super().__init__(master)
         self.grid()
         self.buttonList = []
+        self.set_obj = 0
+        self.time_over = False
         self.create_widgets()
 
     def getPos(self, r, c):
@@ -83,6 +86,41 @@ class Application(Frame):
         else:
             self.buttonPressed = True
             return False
+
+    # Timer functions
+    def set_seconds(self):
+        self.seconds = int(self.seconds_ent.get())
+        self.set_obj += 1
+        self.set_object()
+        
+    def set_increment(self):
+        self.increment = int(self.inc_ent.get())
+        self.set_obj += 1
+        self.set_object()
+
+    def set_object(self):
+        if self.set_obj >= 2:
+            self.obj = Timer(self.seconds, self.increment)
+            self.start_timer()
+            self.update()
+
+    def start_timer(self):
+        self.timer['text'] = self.obj.string()
+    
+    def add_increment(self):
+        self.obj.add_increment()
+        self.start_timer()
+
+    def give_time(self):
+        self.obj.time += int(self.give_time_ent.get())
+        self.start_timer()
+
+    def update(self):
+        if self.obj.time > 0:
+            self.obj.time -= 1
+            self.start_timer()
+            self.after(1000, self.update)
+        else: self.time_over = True
 
     def create_widgets(self):
         self.buttonPressed = False
@@ -129,6 +167,23 @@ class Application(Frame):
             Label(self, text=self.rowLabels[i]).grid(row=9,column=i+1)
         self.turnLabel = Label(self,text='White')
         self.turnLabel.grid(row=10,column=0,columnspan=10)
+
+        # TIMER
+
+        self.timer = Label(self)
+        self.timer.grid(row = 1, column = 11, sticky = W)
+
+        Button(self, text = "How much seconds?", command = self.set_seconds).grid(row = 2, column = 11, sticky = E)
+        self.seconds_ent = Entry(self)
+        self.seconds_ent.grid(row = 2, column = 12, sticky = W)
+
+        Button(self, text = "Increment", command = self.set_increment).grid(row = 3, column = 11, sticky = E)
+        self.inc_ent = Entry(self)
+        self.inc_ent.grid(row = 3, column = 12, sticky = W)
+
+        Button(self, text = "Give time", command = self.give_time).grid(row = 4, column = 11, sticky = E)
+        self.give_time_ent = Entry(self)
+        self.give_time_ent.grid(row = 4, column = 12, sticky = W)
 
 root = Tk()
 root.title('Board GUI')
