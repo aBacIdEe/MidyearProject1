@@ -13,10 +13,10 @@ class Application(tkinter.Frame):
         self.turn = True #True means white, False means black
 
     def create_widgets(self):
-        self.white_timer = tkinter.Label(self)
+        self.white_timer = tkinter.Label(self, text = "insert time", bg = "white", fg = "black")
         self.white_timer.grid(row = 0, column = 0, sticky = W)#get two of these
 
-        self.black_timer = tkinter.Label(self)
+        self.black_timer = tkinter.Label(self, text = "insert time", bg = "black", fg = "white")
         self.black_timer.grid(row = 0, column = 1, sticky = W)
 
         self.seconds_bttn = tkinter.Button(self, text = "How much seconds?", command = self.set_seconds)
