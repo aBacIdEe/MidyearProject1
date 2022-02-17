@@ -49,8 +49,20 @@ class Game():
 
         return PLAYER_MOVES
 
-    def is_attacked(self, tile, color):
-        if color == "White": ALL_POSSIBLE_ATTACKS = get_player_mvoes
+    def is_attacked(self, tile, color): # Color refers to the color of the enemy
+        if color == "White": ALL_POSSIBLE_ATTACKS = self.get_player_moves("White")
+        else: ALL_POSSIBLE_ATTACKS = self.get_player_moves("Black")
+
+        ATTACKED_TILES = []
+        for key in ALL_POSSIBLE_ATTACKS:
+            for tile in ALL_POSSIBLE_ATTACKS[key]:
+                if tile in ATTACKED_TILES:
+                    continue
+                else:
+                    ATTACKED_TILES.append(tile)
+
+        return tile in ATTACKED_TILES
+        
 
     def make_move(self, move): # Updates Board states as well as making the move
         move = list(move)
