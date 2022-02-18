@@ -17,11 +17,11 @@ class Game():
     def set_fen(self, fen):
         fen = fen.split()
         self.board.set_board(fen[0])
-        self.state[0] = fen[0] # Turn 'w' or 'b'
-        self.state[1] = fen[1] # Castling KQkq
-        self.state[2] = fen[2] # En Passant e6
-        self.state[3] = fen[3] # 50 move counter
-        self.state[4] = fen[4] # Full move counter
+        self.state[0] = fen[1] # Turn 'w' or 'b'
+        self.state[1] = fen[2] # Castling KQkq
+        self.state[2] = fen[3] # En Passant e6
+        self.state[3] = fen[4] # 50 move counter
+        self.state[4] = fen[5] # Full move counter
         
 
     def reset(self, fen=default_fen):
@@ -31,7 +31,7 @@ class Game():
 
     def notation_to_index(self, notation): # 
         notation = list(notation)
-        return notation[1] * 8 + ord(notation[0]) - 96
+        return (8 - int(notation[1])) * 8 + ord(notation[0]) - 96
 
     def get_player_moves(self, color):
         ALL_MOVES = self.eval_rays()
@@ -66,8 +66,14 @@ class Game():
 
     def make_move(self, move): # Updates Board states as well as making the move
         move = list(move)
-        start = self.notation_to_index()
+        start = self.notation_to_index(move[0:2])
+        end = self.notation_to_index(move[2:4])
         ALL_MOVES = self.extra_moves()
+
+        if end in ALL_MOVES[str(start)]: # Check get
+            self.board.move_piece(start, end, self.board.board[start])
+
+        
 
     def extra_moves(self): # Adds En Passant and Castling and checks their validity, but the actual movement of pieces is not here
         ALL_MOVES = self.validate_moves()
@@ -207,4 +213,6 @@ print(game1)
 print()
 print(game1.board.all_moves())
 print()
-print(game1.validate_moves())
+print(game1.extra_moves())
+game1.make_move("e2e3")
+print(game1)
