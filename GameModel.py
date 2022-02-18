@@ -31,7 +31,7 @@ class Game():
 
     def notation_to_index(self, notation): # 
         notation = list(notation)
-        return (8 - int(notation[1])) * 8 + ord(notation[0]) - 96
+        return (8 - int(notation[1])) * 8 + ord(notation[0]) - 97
 
     def get_player_moves(self, color):
         ALL_MOVES = self.eval_rays()
@@ -70,7 +70,7 @@ class Game():
         end = self.notation_to_index(move[2:4])
         ALL_MOVES = self.extra_moves()
 
-        if end in ALL_MOVES[str(start)]: # Check get
+        if end in ALL_MOVES.get(str(start), []): # Check get
             self.board.move_piece(start, end, self.board.board[start])
 
         
@@ -113,38 +113,37 @@ class Game():
         VALID_MOVES = {}
 
         for index in ALL_MOVES: # Iterates through all indicies of all pieces
+            if index == "11":
+                abc = 1
             testBoard = Game(fen=str(self)) # Create a test board
             validPieceMoves = []
             # add depth counter for this statement, OR currently trying to use not validated moves but evalulated rays
-            if self.board.board[int(index)].isupper():
-                color = "White"
-                playerMoves = testBoard.get_player_moves("White")
-                kingIndex = self.board.board.index("K")
-            else:
-                color = "Black"
-                playerMoves = testBoard.get_player_moves("Black")
-                kingIndex = self.board.board.index("k")
 
             for rays in ALL_MOVES[index]: # Iterate through all rays from that piece
                 for move in rays:
                     testBoard.board.move_piece(int(index), move, self.board.board[int(index)]) # make that move on the test board
+
+                    if self.board.board[int(index)].isupper():
+                        playerMoves = testBoard.get_player_moves("Black")
+                        kingIndex = self.board.board.index("K")
+                    else:
+                        playerMoves = testBoard.get_player_moves("White")
+                        kingIndex = self.board.board.index("k")
                     
                     attackedSquares = []
-                    if color == "White":
-                        for testIndex in playerMoves:
-                            attackedSquares += playerMoves[testIndex]
-                        if kingIndex in attackedSquares:
-                            continue
-                        else:
-                            validPieceMoves.append(move)
+                    cleanedList = []
+
+                    for testIndex in playerMoves:
+                        attackedSquares.extend(playerMoves[testIndex])
+                    for tiles in attackedSquares:
+                        for tile in tiles:
+                            if tile not in cleanedList:
+                                cleanedList.append(tile)
+                    if kingIndex in cleanedList:
+                        continue
                     else:
-                        for testIndex in playerMoves:
-                            attackedSquares += playerMoves[testIndex]
-                        if kingIndex in attackedSquares:
-                            continue
-                        else:
-                            validPieceMoves.append(move)
-            
+                        validPieceMoves.append(move)
+
             VALID_MOVES[index] = validPieceMoves
         
         return VALID_MOVES
@@ -208,11 +207,14 @@ class Game():
     def update_status(self): # to check if it's black win, white win, or draw
         pass
 
-game1 = Game()
-print(game1)
-print()
-print(game1.board.all_moves())
-print()
-print(game1.extra_moves())
-game1.make_move("e2e3")
-print(game1)
+def main():
+    game1 = Game()
+    print(game1)
+    print()
+    print(game1.board.all_moves())
+    print()
+    print(game1.extra_moves())
+    game1.make_move("e2e3")
+    print(game1)
+
+# main()

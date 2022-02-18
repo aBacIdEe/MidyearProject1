@@ -1,7 +1,7 @@
 from tkinter import *
 from Timer import Timer
 from PIL import Image, ImageTk
-import BoardModel as bm
+import GameModel as gm
 
 GRIDLIST = ['a8 b8 c8 d8 e8 f8 g8 h8'.split(),
             'a7 b7 c7 d7 e7 f7 g7 h7'.split(),
@@ -36,8 +36,7 @@ IMAGESOFPIECES = {
 }
 
 # Setting up the board        
-chess = bm.Board()
-chess.load_board('rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR')
+chess = gm.Game()
 class Application(Frame):
     def __init__(self, master):
         super().__init__(master)
@@ -60,10 +59,11 @@ class Application(Frame):
         else:
             # this is the second button being pressed
             # getting the last move
-            chess.move_piece(self.moves[-1], pos)
+            chess.make_move(self.moves[-1] + pos)
+            print(str(chess))
             for i in range(len(self.buttonList)):
-                if str(chess.board[i]) != "0":
-                    pieceImg = Image.open(IMAGESOFPIECES[str(chess.board[i])])
+                if str(chess.board.board[i]) != " ":
+                    pieceImg = Image.open(IMAGESOFPIECES[str(chess.board.board[i])])
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
                     self.buttonList[i].photo = convertedImg
@@ -77,7 +77,7 @@ class Application(Frame):
         self.updateTurnLabel()
 
     def updateTurnLabel(self):
-        self.turnLabel['text'] = chess.turn
+        self.turnLabel['text'] = chess.state[0]
 
     def isButtonPressed(self):
         if self.buttonPressed:
@@ -148,14 +148,12 @@ class Application(Frame):
         w, h = 70, 60
         for row in range(1,9):
             for column in range(1,9):
-                t = str(chess.board[x])
-                if t == '0':
-                    t = ''
-                if t != '':
-                    pieceImg = Image.open(IMAGESOFPIECES.get(t))
+                t = str(chess.board.board[x])
+                if t != ' ':
+                    pieceImg = Image.open(IMAGESOFPIECES.get(t, "images/blankspace.png"))
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
-                elif t == '':
+                elif t == ' ':
                     pieceImg = Image.open("images/blankspace.png")
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
