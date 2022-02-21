@@ -122,7 +122,8 @@ class Game():
         piece = self.board.board[start]
         target = self.board.board[end]
 
-        if self.check and move not in self.get_moves(self.state[0], i=[start]):
+        temp =  self.get_moves(self.state[0], i=[start])
+        if self.check and move not in temp:
             print("Invalid Move")
             return False
 
@@ -203,7 +204,9 @@ class Game():
                     continue
 
             testBoard.make_move(move)
-            attackedTiles = [move[2:4] for move in testBoard.get_moves(opponent)]
+            attackedTiles = []
+            for tempMove in testBoard.get_moves(opponent):
+                attackedTiles.append(self.notation_to_index(tempMove[2:4]))
             if self.notation_to_index(kingTile) not in attackedTiles:
                 result.append(move)
 
