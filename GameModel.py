@@ -207,7 +207,7 @@ class Game():
             attackedTiles = []
             for tempMove in testBoard.get_moves(opponent):
                 attackedTiles.append(self.notation_to_index(tempMove[2:4]))
-            if self.notation_to_index(kingTile) not in attackedTiles:
+            if testBoard.board.board.index(kingColor) not in attackedTiles:
                 result.append(move)
 
             testBoard.reset(fen=str(self))
