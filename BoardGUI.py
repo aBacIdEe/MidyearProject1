@@ -61,6 +61,7 @@ class Application(Frame):
             # getting the last move
             chess.make_move(self.moves[-1] + pos)
             print(str(chess))
+            print(chess.get_moves(chess.state[0]))
             for i in range(len(self.buttonList)):
                 if str(chess.board.board[i]) != " ":
                     pieceImg = Image.open(IMAGESOFPIECES[str(chess.board.board[i])])
