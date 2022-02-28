@@ -55,15 +55,25 @@ class Application(Frame):
         if not pressed:
             # this is the first button
             self.moves.append(pos)
-
+            
         else:
             # this is the second button being pressed
             # getting the last move
-            chess.make_move(self.moves[-1] + pos)
+
             print(str(chess))
             print(chess.get_moves(chess.state[0]))
+            # if promotion is true:
+                # showpromotion screen()
+                # chess.make_move(self.moves[-1]+pos+self.pieceChoice)
+            
+            chess.make_move(self.moves[-1]+pos)
+            print(self.moves[-1]+pos)
             for i in range(len(self.buttonList)):
                 if str(chess.board.board[i]) != " ":
+                    if str(chess.board.board[i]) == 'P':
+                        if '7' in self.moves[-1] and '8' in pos:
+                            self.showPromotionScreen()
+                            chess.make_move(self.moves[-1]+pos+self.pieceChoice)
                     pieceImg = Image.open(IMAGESOFPIECES[str(chess.board.board[i])])
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
@@ -90,6 +100,33 @@ class Application(Frame):
             self.buttonPressed = True
             return False
 
+    def printChoice(self, choice):
+        self.chooseRook.destroy()
+        self.chooseBishop.destroy()
+        self.chooseKnight.destroy()
+        self.chooseQueen.destroy()
+        self.bttn.destroy()
+        self.lbl.destroy()
+        self.pieceChoice = choice
+        
+    def showPromotionScreen(self):
+        self.choice = StringVar()
+        self.choice.set(None)
+
+        self.chooseRook = Radiobutton(self, text='Rook', variable=self.choice, value='r')
+        self.chooseBishop = Radiobutton(self, text='Bishop', variable=self.choice, value='b')
+        self.chooseKnight = Radiobutton(self, text='Knight', variable = self.choice, value='n')
+        self.chooseQueen = Radiobutton(self, text='Queen', variable=self.choice, value='q')
+        self.bttn = Button(self, text='Select', command=lambda:self.printChoice(self.choice.get()))
+        
+        self.lbl = Label(self, text='Choose the new piece')
+        self.lbl.grid(row=0,column=13)
+        self.chooseRook.grid(row=1,column=13)
+        self.chooseBishop.grid(row=2,column=13)
+        self.chooseKnight.grid(row=3,column=13)
+        self.chooseQueen.grid(row=4,column=13)
+        self.bttn.grid(row=5,column=13)
+        
     # Timer functions
     def set_seconds(self):
         self.seconds = int(self.seconds_ent.get())
