@@ -46,6 +46,8 @@ class Application(Frame):
         self.white_time_over = False #time over meaning time has ended
         self.black_time_over = True
         self.turn = True #True means white, False means black
+        self.buttonPressed = False
+        self.moves = []
         self.create_widgets()
 
     def getPos(self, r, c):
@@ -61,19 +63,25 @@ class Application(Frame):
             # getting the last move
 
             print(str(chess))
-            print(chess.get_moves(chess.state[0]))
-            # if promotion is true:
+            # CHECK IF "r" is 1 or 8 and if the piece is a pawn, that's all you have to do
+            #print(chess.get_moves(chess.state[0]))
+            piece = chess.board.board[chess.notation_to_index(self.moves[-1])]
+            print('row', r, 'end', pos, 'piece', piece)
+            if r == 8 and piece == "p":
+                self.showPromotionScreen()
+                promotionPiece = self.promotionChoice
+            elif r == 1 and piece == "P":
+                self.showPromotionScreen()
+                promotionPiece = self.promotionChoice
+            else:
+                promotionPiece = ""
+
                 # showpromotion screen()
                 # chess.make_move(self.moves[-1]+pos+self.pieceChoice)
-            
-            chess.make_move(self.moves[-1]+pos)
+            chess.make_move(self.moves[-1]+pos+promotionPiece)
             print(self.moves[-1]+pos)
             for i in range(len(self.buttonList)):
                 if str(chess.board.board[i]) != " ":
-                    if str(chess.board.board[i]) == 'P':
-                        if '7' in self.moves[-1] and '8' in pos:
-                            self.showPromotionScreen()
-                            chess.make_move(self.moves[-1]+pos+self.pieceChoice)
                     pieceImg = Image.open(IMAGESOFPIECES[str(chess.board.board[i])])
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
@@ -99,25 +107,17 @@ class Application(Frame):
         else:
             self.buttonPressed = True
             return False
-
-    def printChoice(self, choice):
-        self.chooseRook.destroy()
-        self.chooseBishop.destroy()
-        self.chooseKnight.destroy()
-        self.chooseQueen.destroy()
-        self.bttn.destroy()
-        self.lbl.destroy()
-        self.pieceChoice = choice
         
-    def showPromotionScreen(self):
-        self.choice = StringVar()
-        self.choice.set(None)
+    def changePromotionPiece(self, value):
+        self.promotionChoice = value
 
-        self.chooseRook = Radiobutton(self, text='Rook', variable=self.choice, value='r')
-        self.chooseBishop = Radiobutton(self, text='Bishop', variable=self.choice, value='b')
-        self.chooseKnight = Radiobutton(self, text='Knight', variable = self.choice, value='n')
-        self.chooseQueen = Radiobutton(self, text='Queen', variable=self.choice, value='q')
-        self.bttn = Button(self, text='Select', command=lambda:self.printChoice(self.choice.get()))
+    def showPromotionScreen(self):
+        self.promotionChoice = ''
+
+        self.chooseRook = Button(self, text='Rook')#, command=(lambda p: lambda: self.changePromotionPiece(p))('r'))
+        self.chooseBishop = Button(self, text='Bishop')#, command=(lambda p: lambda: self.changePromotionPiece(p))('b'))
+        self.chooseKnight = Button(self, text='Knight')#, command=(lambda p: lambda: self.changePromotionPiece(p))('n'))
+        self.chooseQueen = Button(self, text='Queen')#, command=(lambda p: lambda: self.changePromotionPiece(p))('q'))
         
         self.lbl = Label(self, text='Choose the new piece')
         self.lbl.grid(row=0,column=13)
@@ -125,7 +125,17 @@ class Application(Frame):
         self.chooseBishop.grid(row=2,column=13)
         self.chooseKnight.grid(row=3,column=13)
         self.chooseQueen.grid(row=4,column=13)
-        self.bttn.grid(row=5,column=13)
+
+        while self.promotionChoice == '':
+            continue
+
+        self.chooseRook.destroy()
+        self.chooseBishop.destroy()
+        self.chooseKnight.destroy()
+        self.chooseQueen.destroy()
+        self.lbl.destroy()
+
+        return self.promotionChoice
         
     # Timer functions
     def set_seconds(self):
@@ -178,11 +188,8 @@ class Application(Frame):
         else: self.turn = True            
 
     def create_widgets(self):
-        self.buttonPressed = False
-        self.moves = []
-        self.imagesUsed = []
         x = 0
-        self.rowLabels = list('abcdefgh')
+        rowLabels = list('abcdefgh')
         w, h = 70, 60
         for row in range(1,9):
             for column in range(1,9):
@@ -216,8 +223,8 @@ class Application(Frame):
                 x += 1
             Label(self, text=row).grid(row=9-row,column=0)
             Label(self,image=convertedImg).grid(row=10,column=0)
-        for i in range(len(self.rowLabels)):
-            Label(self, text=self.rowLabels[i]).grid(row=9,column=i+1)
+        for i in range(len(rowLabels)):
+            Label(self, text=rowLabels[i]).grid(row=9,column=i+1)
         self.turnLabel = Label(self,text='White')
         self.turnLabel.grid(row=10,column=0,columnspan=10)
 
