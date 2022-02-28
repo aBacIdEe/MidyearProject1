@@ -42,11 +42,11 @@ class Application(Frame):
         super().__init__(master)
         self.grid()
         self.buttonList = []
-        self.set_obj = 0
         self.white_time_over = False #time over meaning time has ended
         self.black_time_over = True
         self.turn = True #True means white, False means black
         self.create_widgets()
+        self.set_object()
 
     def getPos(self, r, c):
         '''Gets the grid position of the position using row and column'''
@@ -128,27 +128,14 @@ class Application(Frame):
         self.bttn.grid(row=5,column=13)
         
     # Timer functions
-    def set_seconds(self):
-        self.seconds = int(self.seconds_ent.get())
-        self.set_obj += 1
-        self.seconds_ent.grid_forget()
-        self.seconds_bttn.grid_forget()
-        self.set_object()
-        
-        
-    def set_increment(self):
-        self.increment = int(self.inc_ent.get())
-        self.set_obj += 1
-        self.inc_ent.grid_forget()
-        self.inc_bttn.grid_forget()
-        self.set_object()
 
     def set_object(self):
-        if self.set_obj >= 2:
-            self.white = Timer(self.seconds, self.increment)
-            self.black = Timer(self.seconds, self.increment)
-            self.show_timer()
-            self.update()
+        self.seconds = 600
+        self.increment = 2
+        self.white = Timer(self.seconds, self.increment)
+        self.black = Timer(self.seconds, self.increment)
+        self.show_timer()
+        self.update()
 
     def show_timer(self):
         self.white_timer['text'] = self.white.string()
@@ -223,23 +210,12 @@ class Application(Frame):
 
         # TIMER
 
-        self.white_timer = Label(self, text = "insert time", bg = "white", fg = "black")
+        self.white_timer = Label(self, bg = "white", fg = "black")
         self.white_timer.grid(row = 5, column = 11, sticky = W)#get two of these
 
-        self.black_timer = Label(self, text = "insert time", bg = "black", fg = "white")
+        self.black_timer = Label(self, bg = "black", fg = "white")
         self.black_timer.grid(row = 0, column = 11, sticky = W)
 
-        self.seconds_bttn = Button(self, text = "How much seconds?", command = self.set_seconds)
-        self.seconds_bttn.grid(row = 1, column = 12, sticky = E)
-
-        self.seconds_ent = Entry(self)
-        self.seconds_ent.grid(row = 1, column = 11, sticky = W)
-
-        self.inc_bttn = Button(self, text = "Increment", command = self.set_increment)
-        self.inc_bttn.grid(row = 2, column = 12, sticky = E)
-
-        self.inc_ent = Entry(self)
-        self.inc_ent.grid(row = 2, column = 11, sticky = W)
         
 root = Tk()
 root.title('Board GUI')
