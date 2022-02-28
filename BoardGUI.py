@@ -210,10 +210,10 @@ class Application(Frame):
 
         # TIMER
 
-        self.white_timer = Label(self, bg = "white", fg = "black")
+        self.white_timer = Label(self, bg = "white", fg = "black", font="40")
         self.white_timer.grid(row = 5, column = 11, sticky = W)#get two of these
 
-        self.black_timer = Label(self, bg = "black", fg = "white")
+        self.black_timer = Label(self, bg = "black", fg = "white", font="40")
         self.black_timer.grid(row = 0, column = 11, sticky = W)
 
         
