@@ -203,8 +203,7 @@ class Application(Frame):
 
         self.inc_ent = Entry(self)
         self.inc_ent.grid(row = 2, column = 11, sticky = W)
-
-
+        
 root = Tk()
 root.title('Board GUI')
 app = Application(root)
