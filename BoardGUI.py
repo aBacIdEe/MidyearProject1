@@ -67,6 +67,7 @@ class Application(Frame):
                 # chess.make_move(self.moves[-1]+pos+self.pieceChoice)
             
             chess.make_move(self.moves[-1]+pos)
+
             print(self.moves[-1]+pos)
             for i in range(len(self.buttonList)):
                 if str(chess.board.board[i]) != " ":
@@ -85,6 +86,13 @@ class Application(Frame):
                     convertedImg = ImageTk.PhotoImage(pieceImg)
                     self.buttonList[i].photo = convertedImg
                     self.buttonList[i]["image"] = convertedImg
+            
+            self.add_increment()
+            if chess.state[0] == "w":
+                self.turn = True
+            else:
+                self.turn = False
+
         self.updateTurnLabel()
 
     def updateTurnLabel(self):
@@ -144,9 +152,9 @@ class Application(Frame):
     def add_increment(self):
         if self.turn == True:
             self.white.add_increment()
-        else: self.black.add_increment(); self.update_turn()
+        else: self.black.add_increment()
         self.show_timer()
-        self.update_turn()
+        
 
     def update(self):
         if self.white.time > 0:
@@ -158,11 +166,7 @@ class Application(Frame):
             self.after(1000, self.update)
         else:
             if self.turn == True: self.white_time_over = True
-            else: self.black_time_over = True
-    
-    def update_turn(self):
-        if self.turn == True: self.turn = False
-        else: self.turn = True            
+            else: self.black_time_over = True           
 
     def create_widgets(self):
         self.buttonPressed = False
