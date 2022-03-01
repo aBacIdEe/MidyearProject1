@@ -130,7 +130,6 @@ class Application(Frame):
     def showPromotionScreen(self):
         self.choice = StringVar()
         self.choice.set(None)
-
         self.chooseRook = Radiobutton(self, text='Rook', variable=self.choice, value='r')
         self.chooseBishop = Radiobutton(self, text='Bishop', variable=self.choice, value='b')
         self.chooseKnight = Radiobutton(self, text='Knight', variable = self.choice, value='n')
