@@ -144,6 +144,8 @@ class Game():
             if right not in toRemove:
                 newCastleRights.append(right)
         newState[1] = ''.join(newCastleRights)
+        if newState[1] == '':
+            newState[1] = 1
 
         if piece.lower() == 'p' and abs(start - end) == 16:
             newState[2] = self.index_to_notation((start + end) // 2)
@@ -158,7 +160,7 @@ class Game():
             newState[4] += 1
 
         if len(move) == 5:
-            piece == move[4]
+            piece = move[4]
             if self.state[0] == 'w': 
                 piece = piece.upper()
 
