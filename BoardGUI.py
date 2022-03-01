@@ -42,11 +42,12 @@ class Application(Frame):
         super().__init__(master)
         self.grid()
         self.buttonList = []
-        self.set_obj = 0
         self.white_time_over = False #time over meaning time has ended
         self.black_time_over = True
         self.turn = True #True means white, False means black
+        self.pieceChoice = 'q'
         self.create_widgets()
+        self.set_object()
 
     def getPos(self, r, c):
         '''Gets the grid position of the position using row and column'''
@@ -62,29 +63,42 @@ class Application(Frame):
 
             print(str(chess))
             print(chess.get_moves(chess.state[0]))
-            # if promotion is true:
-                # showpromotion screen()
-                # chess.make_move(self.moves[-1]+pos+self.pieceChoice)
             
-            chess.make_move(self.moves[-1]+pos)
-            print(self.moves[-1]+pos)
+            piece = chess.board.board[chess.notation_to_index(self.moves[-1])]
+
+            if piece == 'P' and '8' in pos:
+                print(self.moves[-1]+pos+self.pieceChoice)
+                chess.make_move(self.moves[-1]+pos+self.pieceChoice)
+            elif piece == 'p' and '1' in pos:
+                print(self.moves[-1]+pos+self.pieceChoice)
+                chess.make_move(self.moves[-1]+pos+self.pieceChoice)
+            else:
+                print(self.moves[-1]+pos)
+                chess.make_move(self.moves[-1]+pos)
+
+
             for i in range(len(self.buttonList)):
                 if str(chess.board.board[i]) != " ":
-                    if str(chess.board.board[i]) == 'P':
-                        if '7' in self.moves[-1] and '8' in pos:
-                            self.showPromotionScreen()
-                            chess.make_move(self.moves[-1]+pos+self.pieceChoice)
                     pieceImg = Image.open(IMAGESOFPIECES[str(chess.board.board[i])])
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
                     self.buttonList[i].photo = convertedImg
                     self.buttonList[i]['image'] = convertedImg
+                    #chess.make_move(self.moves[-1]+pos)
                 else: 
                     pieceImg = Image.open('images/blankspace.png')
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
                     self.buttonList[i].photo = convertedImg
                     self.buttonList[i]["image"] = convertedImg
+                    #chess.make_move(self.moves[-1]+pos)
+            
+            self.add_increment()
+            if chess.state[0] == "w":
+                self.turn = True
+            else:
+                self.turn = False
+
         self.updateTurnLabel()
 
     def updateTurnLabel(self):
@@ -100,6 +114,10 @@ class Application(Frame):
             self.buttonPressed = True
             return False
 
+    def printChoice(self, choice):
+        self.pieceChoice = choice
+
+    '''
     def printChoice(self, choice):
         self.chooseRook.destroy()
         self.chooseBishop.destroy()
@@ -120,35 +138,22 @@ class Application(Frame):
         self.bttn = Button(self, text='Select', command=lambda:self.printChoice(self.choice.get()))
         
         self.lbl = Label(self, text='Choose the new piece')
-        self.lbl.grid(row=0,column=13)
+        self.lbl.grid(row=0,column=0)
         self.chooseRook.grid(row=1,column=13)
         self.chooseBishop.grid(row=2,column=13)
         self.chooseKnight.grid(row=3,column=13)
         self.chooseQueen.grid(row=4,column=13)
         self.bttn.grid(row=5,column=13)
-        
+    '''
     # Timer functions
-    def set_seconds(self):
-        self.seconds = int(self.seconds_ent.get())
-        self.set_obj += 1
-        self.seconds_ent.grid_forget()
-        self.seconds_bttn.grid_forget()
-        self.set_object()
-        
-        
-    def set_increment(self):
-        self.increment = int(self.inc_ent.get())
-        self.set_obj += 1
-        self.inc_ent.grid_forget()
-        self.inc_bttn.grid_forget()
-        self.set_object()
 
     def set_object(self):
-        if self.set_obj >= 2:
-            self.white = Timer(self.seconds, self.increment)
-            self.black = Timer(self.seconds, self.increment)
-            self.show_timer()
-            self.update()
+        self.seconds = 600
+        self.increment = 2
+        self.white = Timer(self.seconds, self.increment)
+        self.black = Timer(self.seconds, self.increment)
+        self.show_timer()
+        self.update()
 
     def show_timer(self):
         self.white_timer['text'] = self.white.string()
@@ -157,9 +162,9 @@ class Application(Frame):
     def add_increment(self):
         if self.turn == True:
             self.white.add_increment()
-        else: self.black.add_increment(); self.update_turn()
+        else: self.black.add_increment()
         self.show_timer()
-        self.update_turn()
+        
 
     def update(self):
         if self.white.time > 0:
@@ -171,11 +176,7 @@ class Application(Frame):
             self.after(1000, self.update)
         else:
             if self.turn == True: self.white_time_over = True
-            else: self.black_time_over = True
-    
-    def update_turn(self):
-        if self.turn == True: self.turn = False
-        else: self.turn = True            
+            else: self.black_time_over = True           
 
     def create_widgets(self):
         self.buttonPressed = False
@@ -215,31 +216,31 @@ class Application(Frame):
                         self.buttonList[-1].grid(row=row,column=column)
                 x += 1
             Label(self, text=row).grid(row=9-row,column=0)
-            Label(self,image=convertedImg).grid(row=10,column=0)
         for i in range(len(self.rowLabels)):
             Label(self, text=self.rowLabels[i]).grid(row=9,column=i+1)
         self.turnLabel = Label(self,text='White')
         self.turnLabel.grid(row=10,column=0,columnspan=10)
 
+        # PROMOTION
+
+        self.chooseRook = Button(self, text='Rook', command=(lambda p: lambda:self.printChoice(p))('r'))
+        self.chooseBishop = Button(self, text='Bishop', command=(lambda p: lambda:self.printChoice(p))('b'))
+        self.chooseKnight = Button(self, text='Knight', command=(lambda p: lambda:self.printChoice(p))('n'))
+        self.chooseQueen = Button(self, text='Queen', command=(lambda p: lambda:self.printChoice(p))('q'))
+
+        self.chooseRook.grid(row=1,column=13)
+        self.chooseBishop.grid(row=2,column=13)
+        self.chooseKnight.grid(row=3,column=13)
+        self.chooseQueen.grid(row=4,column=13)
+
         # TIMER
 
-        self.white_timer = Label(self, text = "insert time", bg = "white", fg = "black")
+        self.white_timer = Label(self, bg = "white", fg = "black", font="40")
         self.white_timer.grid(row = 5, column = 11, sticky = W)#get two of these
 
-        self.black_timer = Label(self, text = "insert time", bg = "black", fg = "white")
+        self.black_timer = Label(self, bg = "black", fg = "white", font="40")
         self.black_timer.grid(row = 0, column = 11, sticky = W)
 
-        self.seconds_bttn = Button(self, text = "How much seconds?", command = self.set_seconds)
-        self.seconds_bttn.grid(row = 1, column = 12, sticky = E)
-
-        self.seconds_ent = Entry(self)
-        self.seconds_ent.grid(row = 1, column = 11, sticky = W)
-
-        self.inc_bttn = Button(self, text = "Increment", command = self.set_increment)
-        self.inc_bttn.grid(row = 2, column = 12, sticky = E)
-
-        self.inc_ent = Entry(self)
-        self.inc_ent.grid(row = 2, column = 11, sticky = W)
         
 root = Tk()
 root.title('Board GUI')
