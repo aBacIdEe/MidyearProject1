@@ -45,6 +45,7 @@ class Application(Frame):
         self.white_time_over = False #time over meaning time has ended
         self.black_time_over = True
         self.turn = True #True means white, False means black
+        self.pieceChoice = 'q'
         self.create_widgets()
         self.set_object()
 
@@ -62,30 +63,35 @@ class Application(Frame):
 
             print(str(chess))
             print(chess.get_moves(chess.state[0]))
-            # if promotion is true:
-                # showpromotion screen()
-                # chess.make_move(self.moves[-1]+pos+self.pieceChoice)
             
-            chess.make_move(self.moves[-1]+pos)
+            piece = chess.board.board[chess.notation_to_index(self.moves[-1])]
 
-            print(self.moves[-1]+pos)
+            if piece == 'P' and '8' in pos:
+                print(self.moves[-1]+pos+self.pieceChoice)
+                chess.make_move(self.moves[-1]+pos+self.pieceChoice)
+            elif piece == 'p' and '1' in pos:
+                print(self.moves[-1]+pos+self.pieceChoice)
+                chess.make_move(self.moves[-1]+pos+self.pieceChoice)
+            else:
+                print(self.moves[-1]+pos)
+                chess.make_move(self.moves[-1]+pos)
+
+
             for i in range(len(self.buttonList)):
                 if str(chess.board.board[i]) != " ":
-                    if str(chess.board.board[i]) == 'P':
-                        if '7' in self.moves[-1] and '8' in pos:
-                            self.showPromotionScreen()
-                            chess.make_move(self.moves[-1]+pos+self.pieceChoice)
                     pieceImg = Image.open(IMAGESOFPIECES[str(chess.board.board[i])])
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
                     self.buttonList[i].photo = convertedImg
                     self.buttonList[i]['image'] = convertedImg
+                    #chess.make_move(self.moves[-1]+pos)
                 else: 
                     pieceImg = Image.open('images/blankspace.png')
                     pieceImg = pieceImg.resize((50,50))
                     convertedImg = ImageTk.PhotoImage(pieceImg)
                     self.buttonList[i].photo = convertedImg
                     self.buttonList[i]["image"] = convertedImg
+                    #chess.make_move(self.moves[-1]+pos)
             
             self.add_increment()
             if chess.state[0] == "w":
@@ -109,6 +115,10 @@ class Application(Frame):
             return False
 
     def printChoice(self, choice):
+        self.pieceChoice = choice
+
+    '''
+    def printChoice(self, choice):
         self.chooseRook.destroy()
         self.chooseBishop.destroy()
         self.chooseKnight.destroy()
@@ -128,13 +138,13 @@ class Application(Frame):
         self.bttn = Button(self, text='Select', command=lambda:self.printChoice(self.choice.get()))
         
         self.lbl = Label(self, text='Choose the new piece')
-        self.lbl.grid(row=0,column=13)
+        self.lbl.grid(row=0,column=0)
         self.chooseRook.grid(row=1,column=13)
         self.chooseBishop.grid(row=2,column=13)
         self.chooseKnight.grid(row=3,column=13)
         self.chooseQueen.grid(row=4,column=13)
         self.bttn.grid(row=5,column=13)
-        
+    '''
     # Timer functions
 
     def set_object(self):
@@ -211,6 +221,18 @@ class Application(Frame):
             Label(self, text=self.rowLabels[i]).grid(row=9,column=i+1)
         self.turnLabel = Label(self,text='White')
         self.turnLabel.grid(row=10,column=0,columnspan=10)
+
+        # PROMOTION
+
+        self.chooseRook = Button(self, text='Rook', command=(lambda p: lambda:self.printChoice(p))('r'))
+        self.chooseBishop = Button(self, text='Bishop', command=(lambda p: lambda:self.printChoice(p))('b'))
+        self.chooseKnight = Button(self, text='Knight', command=(lambda p: lambda:self.printChoice(p))('n'))
+        self.chooseQueen = Button(self, text='Queen', command=(lambda p: lambda:self.printChoice(p))('q'))
+
+        self.chooseRook.grid(row=1,column=13)
+        self.chooseBishop.grid(row=2,column=13)
+        self.chooseKnight.grid(row=3,column=13)
+        self.chooseQueen.grid(row=4,column=13)
 
         # TIMER
 

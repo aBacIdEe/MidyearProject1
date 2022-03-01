@@ -124,7 +124,7 @@ class Game():
 
         temp =  self.get_moves(self.state[0], i=[start])
         if self.check and move not in temp:
-            print("Invalid Move")
+            #print("Invalid Move")
             return False
 
         newState = ['', '-', '-', 0, 1]
@@ -158,7 +158,7 @@ class Game():
             newState[4] += 1
 
         if len(move) == 5:
-            piece == move[4]
+            piece = move[4]
             if self.state[0] == 'w': 
                 piece = piece.upper()
 
