@@ -127,16 +127,14 @@ class Application(Frame):
         self.lbl.destroy()
         self.pieceChoice = choice
         
-    def changePromotionPiece(self, value):
-        self.promotionChoice = value
-
     def showPromotionScreen(self):
-        self.promotionChoice = ''
-
-        self.chooseRook = Button(self, text='Rook')#, command=(lambda p: lambda: self.changePromotionPiece(p))('r'))
-        self.chooseBishop = Button(self, text='Bishop')#, command=(lambda p: lambda: self.changePromotionPiece(p))('b'))
-        self.chooseKnight = Button(self, text='Knight')#, command=(lambda p: lambda: self.changePromotionPiece(p))('n'))
-        self.chooseQueen = Button(self, text='Queen')#, command=(lambda p: lambda: self.changePromotionPiece(p))('q'))
+        self.choice = StringVar()
+        self.choice.set(None)
+        self.chooseRook = Radiobutton(self, text='Rook', variable=self.choice, value='r')
+        self.chooseBishop = Radiobutton(self, text='Bishop', variable=self.choice, value='b')
+        self.chooseKnight = Radiobutton(self, text='Knight', variable = self.choice, value='n')
+        self.chooseQueen = Radiobutton(self, text='Queen', variable=self.choice, value='q')
+        self.bttn = Button(self, text='Select', command=lambda:self.printChoice(self.choice.get()))
         
         self.lbl = Label(self, text='Choose the new piece')
         self.lbl.grid(row=0,column=0)
@@ -180,8 +178,11 @@ class Application(Frame):
             else: self.black_time_over = True           
 
     def create_widgets(self):
+        self.buttonPressed = False
+        self.moves = []
+        self.imagesUsed = []
         x = 0
-        rowLabels = list('abcdefgh')
+        self.rowLabels = list('abcdefgh')
         w, h = 70, 60
         for row in range(1,9):
             for column in range(1,9):
