@@ -272,8 +272,25 @@ class Game():
         
         return result
 
-    def update_status(self): # to check if it's black win, white win, or draw
-        pass
+    def check_status(self): # to check if it's black win, white win, or draw
+        moves = self.get_moves(self.state[0])
+        enemyMoves = [move[2:4] for move in self.get_moves({'w': 'b', 'b': 'w'}.get(self.state[0]))]
+        if self.state[0] == 'w':
+            inCheck = self.index_to_notation(self.board.board.index('K')) in enemyMoves
+        else:
+            inCheck = self.index_to_notation(self.board.board.index('k')) in enemyMoves
+        if len(moves) == 0:
+            if inCheck:
+                if self.state[0] == 'w':
+                    print("Black wins")
+                    return 'b'
+                else:
+                    print("White wins")
+                    return 'w'
+            else:
+                print("Stalemate")
+                return 's'
+        return ''
 
 def main():
     game1 = Game()
