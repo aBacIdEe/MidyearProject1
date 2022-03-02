@@ -63,7 +63,7 @@ class Application(Frame):
 
             print(str(chess))
             print(chess.get_moves(chess.state[0]))
-            
+
             piece = chess.board.board[chess.notation_to_index(self.moves[-1])]
 
             if piece == 'P' and '8' in pos:
