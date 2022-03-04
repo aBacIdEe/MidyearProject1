@@ -105,6 +105,12 @@ class Application(Frame):
 
     def updateTurnLabel(self):
         self.turnLabel['text'] = chess.state[0]
+        if chess.state[0]=='w' and len(chess.get_moves(chess.state[0]))==0:
+            self.turnLabel['text'] = 'Black Wins!'
+            self.turnLabel['bg'] = 'red'
+        elif chess.state[0]=='b' and len(chess.get_moves(chess.state[0]))==0:
+            self.turnLabel['text'] = 'BLACK WINS'
+            self.turnLabel['bg'] = 'blue'
 
     def isButtonPressed(self):
         if self.buttonPressed:
@@ -177,7 +183,7 @@ class Application(Frame):
             self.after(1000, self.update)
         else:
             if self.turn == True: self.white_time_over = True
-            else: self.black_time_over = True           
+            else: self.black_time_over = True
 
     def create_widgets(self):
         self.buttonPressed = False
