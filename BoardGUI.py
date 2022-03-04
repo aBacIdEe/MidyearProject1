@@ -109,7 +109,7 @@ class Application(Frame):
             self.turnLabel['text'] = 'Black Wins!'
             self.turnLabel['bg'] = 'red'
         elif chess.state[0]=='b' and len(chess.get_moves(chess.state[0]))==0:
-            self.turnLabel['text'] = 'BLACK WINS'
+            self.turnLabel['text'] = 'White Wins!'
             self.turnLabel['bg'] = 'blue'
 
     def isButtonPressed(self):
