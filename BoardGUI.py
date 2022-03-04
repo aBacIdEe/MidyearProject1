@@ -168,7 +168,7 @@ class Application(Frame):
         
 
     def update(self):
-        if self.white.time > 0:
+        if self.white.time > 0 and self.black.time > 0:
             if self.turn == True:
                 self.white.time -= 1
             else:
