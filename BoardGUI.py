@@ -63,7 +63,8 @@ class Application(Frame):
 
             print(str(chess))
             print(chess.get_moves(chess.state[0]))
-
+            
+            
             piece = chess.board.board[chess.notation_to_index(self.moves[-1])]
 
             if piece == 'P' and '8' in pos:
@@ -76,6 +77,7 @@ class Application(Frame):
                 print(self.moves[-1]+pos)
                 chess.make_move(self.moves[-1]+pos)
 
+            chess.check_status()
 
             for i in range(len(self.buttonList)):
                 if str(chess.board.board[i]) != " ":
@@ -166,7 +168,7 @@ class Application(Frame):
         
 
     def update(self):
-        if self.white.time > 0:
+        if self.white.time > 0 and self.black.time > 0:
             if self.turn == True:
                 self.white.time -= 1
             else:
@@ -239,7 +241,6 @@ class Application(Frame):
 
         self.black_timer = Label(self, bg = "black", fg = "white", font="40")
         self.black_timer.grid(row = 0, column = 11, sticky = W)
-
         
 root = Tk()
 root.title('Board GUI')
