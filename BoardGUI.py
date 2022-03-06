@@ -38,6 +38,7 @@ IMAGESOFPIECES = {
 # Setting up the board        
 chess = gm.Game()
 class Application(Frame):
+
     def __init__(self, master):
         super().__init__(master)
         self.grid()
@@ -63,7 +64,6 @@ class Application(Frame):
 
             print(str(chess))
             print(chess.get_moves(chess.state[0]))
-            
             
             piece = chess.board.board[chess.notation_to_index(self.moves[-1])]
 
@@ -249,6 +249,7 @@ class Application(Frame):
         self.black_timer.grid(row = 0, column = 11, sticky = W)
         
 root = Tk()
-root.title('Board GUI')
+root.title('CHESS')
 app = Application(root)
+app['bg'] = 'white'
 root.mainloop()
