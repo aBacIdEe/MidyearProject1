@@ -44,7 +44,7 @@ class Application(Frame):
         self.grid()
         self.buttonList = []
         self.white_time_over = False #time over meaning time has ended
-        self.black_time_over = True
+        self.black_time_over = False
         self.turn = True #True means white, False means black
         self.pieceChoice = 'q'
         self.create_widgets()
@@ -67,49 +67,62 @@ class Application(Frame):
             
             piece = chess.board.board[chess.notation_to_index(self.moves[-1])]
 
-            if piece == 'P' and '8' in pos:
-                print(self.moves[-1]+pos+self.pieceChoice)
-                chess.make_move(self.moves[-1]+pos+self.pieceChoice)
-            elif piece == 'p' and '1' in pos:
-                print(self.moves[-1]+pos+self.pieceChoice)
-                chess.make_move(self.moves[-1]+pos+self.pieceChoice)
-            else:
-                print(self.moves[-1]+pos)
-                chess.make_move(self.moves[-1]+pos)
+            if not self.white_time_over and not self.black_time_over:
 
-            chess.check_status()
+                if piece == 'P' and '8' in pos:
+                    print(self.moves[-1]+pos+self.pieceChoice)
+                    chess.make_move(self.moves[-1]+pos+self.pieceChoice)
+                elif piece == 'p' and '1' in pos:
+                    print(self.moves[-1]+pos+self.pieceChoice)
+                    chess.make_move(self.moves[-1]+pos+self.pieceChoice)
+                else:
+                    print(self.moves[-1]+pos)
+                    chess.make_move(self.moves[-1]+pos)
 
-            for i in range(len(self.buttonList)):
-                if str(chess.board.board[i]) != " ":
-                    pieceImg = Image.open(IMAGESOFPIECES[str(chess.board.board[i])])
-                    pieceImg = pieceImg.resize((50,50))
-                    convertedImg = ImageTk.PhotoImage(pieceImg)
-                    self.buttonList[i].photo = convertedImg
-                    self.buttonList[i]['image'] = convertedImg
-                    #chess.make_move(self.moves[-1]+pos)
-                else: 
-                    pieceImg = Image.open('images/blankspace.png')
-                    pieceImg = pieceImg.resize((50,50))
-                    convertedImg = ImageTk.PhotoImage(pieceImg)
-                    self.buttonList[i].photo = convertedImg
-                    self.buttonList[i]["image"] = convertedImg
-                    #chess.make_move(self.moves[-1]+pos)
-            
-            self.add_increment()
-            if chess.state[0] == "w":
-                self.turn = True
-            else:
-                self.turn = False
+                chess.check_status()
 
-        self.updateTurnLabel()
+                for i in range(len(self.buttonList)):
+                    if str(chess.board.board[i]) != " ":
+                        pieceImg = Image.open(IMAGESOFPIECES[str(chess.board.board[i])])
+                        pieceImg = pieceImg.resize((50,50))
+                        convertedImg = ImageTk.PhotoImage(pieceImg)
+                        self.buttonList[i].photo = convertedImg
+                        self.buttonList[i]['image'] = convertedImg
+                        #chess.make_move(self.moves[-1]+pos)
+                    else: 
+                        pieceImg = Image.open('images/blankspace.png')
+                        pieceImg = pieceImg.resize((50,50))
+                        convertedImg = ImageTk.PhotoImage(pieceImg)
+                        self.buttonList[i].photo = convertedImg
+                        self.buttonList[i]["image"] = convertedImg
+                        #chess.make_move(self.moves[-1]+pos)
+                
+                self.add_increment()
+                if chess.state[0] == "w":
+                    self.turn = True
+                else:
+                    self.turn = False
+                self.updateTurnLabel()
+
+    def timeOverMessage(self):
+        if self.white_time_over:
+            self.turnLabel['text'] = 'Time out! Black Wins!'
+            self.turnLabel['bg'] = 'red'
+            self.turnLabel['fg'] = 'white'
+        elif self.black_time_over:
+            self.turnLabel['text'] = 'Time out! White Wins!'
+            self.turnLabel['bg'] = 'blue'
+            self.turnLabel['fg'] = 'white'
 
     def updateTurnLabel(self):
         self.turnLabel['text'] = chess.state[0]
         if chess.state[0]=='w' and len(chess.get_moves(chess.state[0]))==0:
             self.turnLabel['text'] = 'Black Wins!'
+            self.turnLabel['fg'] = 'white'
             self.turnLabel['bg'] = 'red'
         elif chess.state[0]=='b' and len(chess.get_moves(chess.state[0]))==0:
             self.turnLabel['text'] = 'White Wins!'
+            self.turnLabel['fg'] = 'white'
             self.turnLabel['bg'] = 'blue'
 
     def isButtonPressed(self):
@@ -184,6 +197,7 @@ class Application(Frame):
         else:
             if self.turn == True: self.white_time_over = True
             else: self.black_time_over = True
+            self.timeOverMessage()
 
     def create_widgets(self):
         self.buttonPressed = False
